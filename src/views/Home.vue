@@ -89,7 +89,7 @@ export default {
         path: 'reports'
       }],
       iconsObj: {
-        125: 'iconfont icon-user',
+        125: 'iconfont icon-morentouxiang',
         103: 'iconfont icon-tijikongjian',
         101: 'iconfont icon-shangpin',
         102: 'iconfont icon-danju',

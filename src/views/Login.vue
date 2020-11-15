@@ -36,6 +36,20 @@ export default {
           { required: true, message: '请输入登录密码', trigger: 'blur' },
           { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
         ]
+      },
+      res: {
+        data: {
+          id: 510,
+          rid: 0,
+          username: 'yuchen',
+          mobile: '18968919292',
+          email: '546448821@qq.com',
+          token: '12322112'
+        },
+        meta: {
+          msg: '登录成功',
+          status: 200
+        }
       }
     }
   },
@@ -46,10 +60,10 @@ export default {
     login () {
       this.$refs.LoginFormRef.validate(async valid => {
         if (!valid) return
-        const { data: res } = await this.$http.post('login', this.LoginForm)
-        if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
-        this.$message.success(res.meta.msg)
-        window.sessionStorage.setItem('token', res.data.token)
+        // const { data: res } = await this.$http.post('login', this.LoginForm)
+        if (this.res.meta.status !== 200) return this.$message.error(this.res.meta.msg)
+        this.$message.success(this.res.meta.msg)
+        window.sessionStorage.setItem('token', this.res.data.token)
         this.$router.push('home')
       })
     }

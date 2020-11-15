@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 const Home = () => import('@/views/Home.vue')
 const Welcome = () => import('@/views/Welcome.vue')
+const Login = () => import('@/views/Login.vue')
 const Users = () => import('@/views/user/Users.vue')
 
 Vue.use(VueRouter)
@@ -9,6 +10,14 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
+    redirect: '/login'
+  },
+  {
+    path: '/login',
+    component: Login
+  },
+  {
+    path: '/home',
     name: 'Home',
     component: Home,
     children: [
@@ -19,10 +28,6 @@ const routes = [
       {
         path: '/users',
         component: Users
-      },
-      {
-        path: '/login',
-        component: Login
       }
     ]
   }
@@ -30,6 +35,13 @@ const routes = [
 
 const router = new VueRouter({
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.path === '/login') return next()
+  const tokenStr = window.sessionStorage.getItem('token')
+  if (!tokenStr) return next('/login')
+  next()
 })
 
 export default router
