@@ -20,6 +20,7 @@
   </div>
 </template>
 <script>
+import { PostLogin } from '../network/login'
 export default {
   data () {
     return {
@@ -60,11 +61,17 @@ export default {
     login () {
       this.$refs.LoginFormRef.validate(async valid => {
         if (!valid) return
-        // const { data: res } = await this.$http.post('login', this.LoginForm)
-        if (this.res.meta.status !== 200) return this.$message.error(this.res.meta.msg)
-        this.$message.success(this.res.meta.msg)
-        window.sessionStorage.setItem('token', this.res.data.token)
-        this.$router.push('home')
+        PostLogin(this.LoginForm).then(res => {
+          if (res.code !== 200) return this.$message.error(res.message)
+          this.$message.success(res.message)
+          window.sessionStorage.setItem('token', res.session)
+          this.$router.push('home')
+        })
+        // const { data: res } = await this.$http.get('login', this.LoginForm)
+        // if (this.res.meta.status !== 200) return this.$message.error(this.res.meta.msg)
+        // this.$message.success(this.res.meta.msg)
+        // window.sessionStorage.setItem('token', this.res.data.token)
+        // this.$router.push('home')
       })
     }
   }
