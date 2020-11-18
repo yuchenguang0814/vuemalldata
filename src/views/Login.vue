@@ -67,11 +67,6 @@ export default {
           window.sessionStorage.setItem('token', res.session)
           this.$router.push('home')
         })
-        // const { data: res } = await this.$http.get('login', this.LoginForm)
-        // if (this.res.meta.status !== 200) return this.$message.error(this.res.meta.msg)
-        // this.$message.success(this.res.meta.msg)
-        // window.sessionStorage.setItem('token', this.res.data.token)
-        // this.$router.push('home')
       })
     }
   }
