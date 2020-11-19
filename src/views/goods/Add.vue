@@ -21,6 +21,9 @@
             <el-form-item label="产品名称" prop="goods_name">
               <el-input v-model="addForm.goods_name"></el-input>
             </el-form-item>
+            <el-form-item label="是否首页显示" prop="goods_ishome">
+              <el-switch v-model="addForm.goods_ishome" active-value="是" inactive-value="否"></el-switch>
+            </el-form-item>
             <el-form-item label="产品序号" prop="goods_sort">
               <el-input v-model="addForm.goods_sort" type="number"></el-input>
             </el-form-item>
@@ -53,7 +56,7 @@
               <el-input v-model="addForm.goods_key"></el-input>
             </el-form-item>
             <el-form-item label="产品页面描述" prop="goods_description">
-              <el-input v-model="addForm.goods_description"></el-input>
+              <el-input v-model="addForm.goods_description" type="textarea"></el-input>
             </el-form-item>
           </el-tab-pane>
           <el-tab-pane label="商品属性" name="2">
@@ -80,7 +83,10 @@
             </el-upload>
           </el-tab-pane>
           <el-tab-pane label="商品内容" name="4">
-            <quill-editor v-model="addForm.goods_introduce" ref="richAnalysis" :options="options"></quill-editor>
+            <quill-editor
+            v-model="addForm.goods_introduce"
+            
+             ref="richAnalysis" :options="options"></quill-editor>
             <el-button type="primary" class="btnAdd" @click="addGood">添加商品</el-button>
           </el-tab-pane>
         </el-tabs>
@@ -109,7 +115,8 @@ export default {
     return {
       options: {
         theme: 'snow',
-        placeholder: '请输入内容'
+        placeholder: '请输入内容',
+        
       },
       activeIndex: '0',
       addForm: {
@@ -120,7 +127,8 @@ export default {
         goods_cat: [],
         pics: [],
         goods_introduce: '',
-        attrs: []
+        attrs: [],
+        goods_ishome: ''
       },
       addFormRules: {
         // goods_name: [
