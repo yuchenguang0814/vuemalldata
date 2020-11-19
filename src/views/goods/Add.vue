@@ -9,7 +9,7 @@
       <el-alert title="添加商品" type="info" center show-icon :closable="false"></el-alert>
       <el-steps :space="200" :active="activeIndex - 0" finish-status="success" align-center>
         <el-step title="基本信息"></el-step>
-        <el-step title="商品参数"></el-step>
+        <el-step title="SEO关键词"></el-step>
         <el-step title="商品属性"></el-step>
         <el-step title="商品图片"></el-step>
         <el-step title="商品内容"></el-step>
@@ -18,44 +18,69 @@
       <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="100px" label-position="top">
         <el-tabs :tab-position="'left'" v-model="activeIndex" :before-leave="beforeTabLeave" @tab-click="TabClicked">
           <el-tab-pane label="基本信息" name="0">
-            <el-form-item label="商品名称" prop="goods_name">
+            <el-form-item label="产品名称" prop="goods_name">
               <el-input v-model="addForm.goods_name"></el-input>
             </el-form-item>
-            <el-form-item label="商品价格" prop="goods_price">
-              <el-input v-model="addForm.goods_price" type="number"></el-input>
+            <el-form-item label="产品序号" prop="goods_sort">
+              <el-input v-model="addForm.goods_sort" type="number"></el-input>
             </el-form-item>
-            <el-form-item label="商品数量" prop="goods_number">
-              <el-input v-model="addForm.goods_number" type="number"></el-input>
+            <el-form-item label="机器重量KG" prop="goods_weight">
+              <el-alert show-icon title="单位（KG）" type="warning" :closable="false" class="cat_alert"></el-alert>
+              <el-input v-model="addForm.goods_weight"></el-input>
             </el-form-item>
-            <el-form-item label="商品重量" prop="goods_weight">
-              <el-input v-model="addForm.goods_weight" type="number"></el-input>
+            <el-form-item label="外形尺寸" prop="goods_dimensions">
+              <el-alert show-icon title="单位（M）" type="warning" :closable="false" class="cat_alert"></el-alert>
+              <el-input v-model="addForm.goods_dimensions"></el-input>
             </el-form-item>
             <el-form-item label="请选择商品所属分类" prop="goods_cat">
-              <el-alert show-icon title="注意：只能添加商品到第三级分类" type="warning" :closable="false" class="cat_alert"></el-alert>
-              <el-cascader expand-trigger="hover" :options="cateList" :props="cascaderProps" v-model="addForm.goods_cat" @change="handleChange" clearable>
-              </el-cascader>
+              <el-select v-model="addForm.goods_cat" placeholder="请选择商品类别">
+                <el-option
+                  v-for="item in cateList"
+                  :key="item.id"
+                  :label="item.pageName"
+                  :value="item.id"
+                  >
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-tab-pane>
-          <el-tab-pane label="商品参数" name="1">
-            <el-form-item :label="item.attr_name" v-for="item in manyTableData" :key="item.attr_id">
-              <el-checkbox-group v-model="item.attr_vals">
-                <el-checkbox :label="cb" v-for="(cb, i) in item.attr_vals" :key="i" border></el-checkbox>
-              </el-checkbox-group>
+          <el-tab-pane label="SEO关键词" name="1">
+            <el-alert show-icon title="为了更好的优化，请填写下面这些信息" type="warning" :closable="false" class="key_alert"></el-alert>
+            <el-form-item label="产品页面标题" prop="goods_title">
+              <el-input v-model="addForm.goods_title"></el-input>
+            </el-form-item>
+            <el-form-item label="产品页面关键词" prop="goods_key">
+              <el-input v-model="addForm.goods_key"></el-input>
+            </el-form-item>
+            <el-form-item label="产品页面描述" prop="goods_description">
+              <el-input v-model="addForm.goods_description"></el-input>
             </el-form-item>
           </el-tab-pane>
           <el-tab-pane label="商品属性" name="2">
-            <el-form-item :label="item.attr_name" v-for="item in onlyTableData" :key="item.attr_id">
+            <!-- <el-form-item :label="item.attr_name" v-for="item in onlyTableData" :key="item.attr_id">
               <el-input v-model="item.attr_vals"></el-input>
-            </el-form-item>
+            </el-form-item> -->
           </el-tab-pane>
           <el-tab-pane label="商品图片" name="3">
-            <el-upload :action="uploadURL" :on-preview="handlePreview" :on-remove="handleRemove" list-type="picture" :headers="headerObj" :on-success="handleSuccess">
+            <el-upload
+            :action="uploadURL"
+            ref="upload"
+            :file-list="fileList"
+            :before-upload="beforeAvatarUpload"
+            :on-change="handlechange"
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            list-type="picture"
+            :on-error="onError"
+            :headers="headerObj"
+            :auto-upload="false"
+            :on-success="handleSuccess">
               <el-button size="small" type="primary">点击上传</el-button>
               <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
             </el-upload>
           </el-tab-pane>
           <el-tab-pane label="商品内容" name="4">
-            <quill-editor v-model="addForm.goods_introduce"></quill-editor>
+            <quill-editor v-model="addForm.goods_introduce" ref="richAnalysis" :options="options"></quill-editor>
             <el-button type="primary" class="btnAdd" @click="addGood">添加商品</el-button>
           </el-tab-pane>
         </el-tabs>
@@ -69,10 +94,23 @@
 
 <script>
 import _ from 'lodash'
-
+import { quillEditor } from 'vue-quill-editor'
+// 导入富文本编辑器样式
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+import { getGoodsCate } from '../../network/goods'
+import { addQuillTitle } from '../../plugins/quill-title'
 export default {
+  components: {
+    quillEditor
+  },
   data () {
     return {
+      options: {
+        theme: 'snow',
+        placeholder: '请输入内容'
+      },
       activeIndex: '0',
       addForm: {
         goods_name: '',
@@ -85,57 +123,46 @@ export default {
         attrs: []
       },
       addFormRules: {
-        goods_name: [
-          { required: true, message: `请输入商品名称`, trigger: 'blur' }
-        ],
-        goods_price: [
-          { required: true, message: `请输入商品价格`, trigger: 'blur' }
-        ],
-        goods_number: [
-          { required: true, message: `请输入商品数量`, trigger: 'blur' }
-        ],
-        goods_weight: [
-          { required: true, message: `请输入商品重量`, trigger: 'blur' }
-        ],
-        goods_cat: [
-          { required: true, message: `请选择商品分类`, trigger: 'blur' }
-        ]
+        // goods_name: [
+        //   { required: true, message: '请输入产品名称', trigger: 'blur' }
+        // ],
+        // goods_sort: [
+        //   { required: true, message: '请输入产品序号', trigger: 'blur' }
+        // ],
+        // goods_weight: [
+        //   { required: true, message: '请输入机器重量', trigger: 'blur' }
+        // ],
+        // goods_dimensions: [
+        //   { required: true, message: '请输入外形尺寸', trigger: 'blur' }
+        // ],
+        // goods_cat: [
+        //   { required: true, message: '请选择商品分类', trigger: 'blur' }
+        // ]
       },
       cateList: [],
-      cascaderProps: {
-        value: 'cat_id',
-        label: 'cat_name',
-        children: 'children'
-      },
-      manyTableData: [],
-      onlyTableData: [],
-      uploadURL: 'http://127.0.0.1:8888/api/private/v1/upload',
+      value: '',
+      uploadURL: 'http://127.0.0.1:3000/upload',
       headerObj: {
         Authorization: window.sessionStorage.getItem('token')
       },
       previewPath: '',
-      previewVisible: false
+      previewVisible: false,
+      fileList: []
     }
   },
   created () {
-    this.getCateList()
+    this.getGoodList()
+  },
+  mounted () {
+    addQuillTitle()
   },
   computed: {
-    cateId () {
-      if (this.addForm.goods_cat.length !== 3) return null
-      return this.addForm.goods_cat[2]
-    }
   },
   methods: {
-    async getCateList () {
-      const { data: res } = await this.$http.get('categories')
-      if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
-      this.cateList = res.data
-    },
-    handleChange () {
-      if (this.addForm.goods_cat.length !== 3) {
-        this.addForm.goods_cat = []
-      }
+    getGoodList () {
+      getGoodsCate().then(res => {
+        this.cateList = res.data.cate
+      })
     },
     beforeTabLeave (activeName, oldActiveName) {
       let valBoolean = false
@@ -146,32 +173,45 @@ export default {
       })
       if (!valBoolean) {
         const varMessage = []
-        for (let key in varObject) {
+        for (const key in varObject) {
           varMessage.push(varObject[key][0].message)
         }
         this.$message.error(varMessage[0])
         return false
       }
     },
-    async TabClicked () {
-      if (this.activeIndex === '1') {
-        const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes`, { params: { sel: 'many' } })
-        if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
-        res.data.forEach(item => {
-          item.attr_vals = item.attr_vals ? item.attr_vals.split(' ') : []
-          item.inputVisible = false
-          item.inputValue = ''
-        })
-        this.manyTableData = res.data
-      } else if (this.activeIndex === '2') {
-        const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes`, { params: { sel: 'only' } })
-        if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
-        this.onlyTableData = res.data
-      }
+    TabClicked () {
+      console.log(this.activeIndex)
     },
-    handleSuccess (response) {
-      const picInfo = { pic: response.data.tmp_path }
-      this.addForm.pics.push(picInfo)
+    beforeAvatarUpload (file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isLt2M = file.size / 1024 / 1024 < 0.5
+      if (!isJPG) {
+        this.$message.error('上传产品图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传产品图片大小不能超过 500KB!')
+      }
+      return isJPG && isLt2M
+    },
+    handleSuccess (res) {
+      this.$message.success('上传产品图片成功!')
+      this.addForm.pic = res.img
+      console.log(this.addForm.pic)
+    },
+    onError (res) {
+      alert('创建失败', '提示', {
+        confirmButtonText: '确定',
+        callback: action => {
+          console.log('上传失败')
+        }
+      })
+    },
+    handlechange (file, fileList) {
+      if (fileList.length > 0) {
+        this.fileList = [fileList[fileList.length - 1]]
+      }
+      this.$refs.upload.submit()
     },
     handlePreview (file) {
       this.previewPath = file.response.data.url
@@ -185,20 +225,6 @@ export default {
     async addGood () {
       const form = _.cloneDeep(this.addForm)
       form.goods_cat = form.goods_cat.join(',')
-      this.manyTableData.forEach(item => {
-        const newInfo = {
-          attr_id: item.attr_id,
-          attr_value: item.attr_vals.join(' ')
-        }
-        this.addForm.attrs.push(newInfo)
-      })
-      this.onlyTableData.forEach(item => {
-        const newInfo = {
-          attr_id: item.attr_id,
-          attr_value: item.attr_vals
-        }
-        this.addForm.attrs.push(newInfo)
-      })
       form.attrs = this.addForm.attrs
       const { data: res } = await this.$http.post('goods', form)
       if (res.meta.status !== 201) {
@@ -211,12 +237,18 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-.cat_alert {
+<style lang='less' scoped>
+.key_alert {
   width: 300px;
   position: absolute;
-  left: 230px;
-  top: -10px;
+  left: 180px;
+  top: 0px;
+}
+.cat_alert {
+  width: 140px;
+  position: absolute;
+  left: 180px;
+  top: -60px;
 }
 .el-checkbox {
   margin: 0 5px 0 0 !important;

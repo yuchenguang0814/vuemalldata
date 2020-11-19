@@ -7,7 +7,7 @@
     </el-breadcrumb>
     <el-card>
       <el-row :gutter="20">
-        <el-col :span="8">
+        <el-col :span="4">
           <el-select v-model="value" placeholder="请选择商品类别" @change = handleChange>
             <el-option
               v-for="item in cateList"
@@ -24,16 +24,22 @@
       </el-row>
       <el-table :data="goodList" border stripe>
         <el-table-column label="商品序号" prop="sort"></el-table-column>
-        <el-table-column label="商品型号" prop="model"></el-table-column>
+        <el-table-column label="商品缩略图" prop="image">
+          <template slot-scope="scope">
+            <img :src="scope.row.image" alt="" width="140px" height="auto">
+          </template>
+        </el-table-column>
         <el-table-column label="商品名称" prop="name"></el-table-column>
-        <el-table-column label="商品类别" prop="cid" width="80px"></el-table-column>
-          <!-- <template slot-scope="scope">
+        <el-table-column label="商品类别" prop="pageName" width="120px"></el-table-column>
+        <el-table-column label="创建时间" prop="add_time" width="160px">
+          <template slot-scope="scope">
             {{scope.row.add_time | dateFormat}}
-          </template> -->
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="130px">
           <template slot-scope="scope">
               <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
-              <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeGoodById(scope.row.goods_id)"></el-button>
+              <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeGoodById(scope.row.id)"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -71,7 +77,7 @@ export default {
   watch: {
     List () {
       this.goodList = this.List.goods
-      this.total = this.List.total
+      this.total = parseInt(this.List.total)
       this.cateList = this.List.goodsCate
     }
   },
@@ -84,10 +90,6 @@ export default {
         this.List = res.data
       })
     },
-    // const { data: res } = await this.$http.get('goods', { params: this.queryInfo })
-    // if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
-    // this.goodList = res.data.goods
-    // this.total = res.data.total
     handleSizeChange (newSize) {
       this.queryInfo.pagesize = newSize
       this.getGoodList()
