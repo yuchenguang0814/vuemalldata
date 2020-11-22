@@ -59,10 +59,13 @@
               <el-input v-model="addForm.goods_description" type="textarea"></el-input>
             </el-form-item>
           </el-tab-pane>
-          <el-tab-pane label="商品属性" name="2">
-            <!-- <el-form-item :label="item.attr_name" v-for="item in onlyTableData" :key="item.attr_id">
-              <el-input v-model="item.attr_vals"></el-input>
-            </el-form-item> -->
+          <el-tab-pane label="产品概述" name="2">
+            <el-form-item label="产品概述" prop="goods_overview">
+              <el-input v-model="addForm.goods_overview" type="textarea"></el-input>
+            </el-form-item>
+            <el-form-item label="产品特点" prop="goods_advantage">
+              <el-input v-model="addForm.goods_advantage" type="textarea"></el-input>
+            </el-form-item>
           </el-tab-pane>
           <el-tab-pane label="商品图片" name="3">
             <el-upload
@@ -85,8 +88,7 @@
           <el-tab-pane label="商品内容" name="4">
             <quill-editor
             v-model="addForm.goods_introduce"
-            
-             ref="richAnalysis" :options="options"></quill-editor>
+            ref="richAnalysis" :options="options"></quill-editor>
             <el-button type="primary" class="btnAdd" @click="addGood">添加商品</el-button>
           </el-tab-pane>
         </el-tabs>
@@ -115,8 +117,7 @@ export default {
     return {
       options: {
         theme: 'snow',
-        placeholder: '请输入内容',
-        
+        placeholder: '请输入内容'
       },
       activeIndex: '0',
       addForm: {
