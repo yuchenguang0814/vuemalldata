@@ -68,6 +68,7 @@
             </el-form-item>
           </el-tab-pane>
           <el-tab-pane label="商品图片" name="3">
+            <el-alert show-icon title="图片尺寸560*350" type="warning" :closable="false" class="key_alert"></el-alert>
             <el-upload
             :action="uploadURL"
             ref="upload"
@@ -87,7 +88,7 @@
           </el-tab-pane>
           <el-tab-pane label="商品内容" name="4">
             <quill-editor
-            v-model="addForm.goods_introduce"
+            v-model="addForm.goods_content"
             ref="richAnalysis" :options="options"></quill-editor>
             <el-button type="primary" class="btnAdd" @click="addGood">添加商品</el-button>
           </el-tab-pane>
@@ -107,7 +108,7 @@ import { quillEditor } from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
-import { getGoodsCate } from '../../network/goods'
+import { getGoodsCate, addgoods } from '../../network/goods'
 import { addQuillTitle } from '../../plugins/quill-title'
 export default {
   components: {
@@ -122,31 +123,34 @@ export default {
       activeIndex: '0',
       addForm: {
         goods_name: '',
-        goods_price: '',
-        goods_number: '',
+        goods_ishome: '',
+        goods_sort: '',
         goods_weight: '',
-        goods_cat: [],
-        pics: [],
-        goods_introduce: '',
-        attrs: [],
-        goods_ishome: ''
+        goods_dimensions: '',
+        goods_cat: '',
+        goods_title: '',
+        goods_key: '',
+        goods_description: '',
+        goods_overview: '',
+        goods_advantage: '',
+        goods_content: ''
       },
       addFormRules: {
-        // goods_name: [
-        //   { required: true, message: '请输入产品名称', trigger: 'blur' }
-        // ],
-        // goods_sort: [
-        //   { required: true, message: '请输入产品序号', trigger: 'blur' }
-        // ],
-        // goods_weight: [
-        //   { required: true, message: '请输入机器重量', trigger: 'blur' }
-        // ],
-        // goods_dimensions: [
-        //   { required: true, message: '请输入外形尺寸', trigger: 'blur' }
-        // ],
-        // goods_cat: [
-        //   { required: true, message: '请选择商品分类', trigger: 'blur' }
-        // ]
+        goods_name: [
+          { required: true, message: '请输入产品名称', trigger: 'blur' }
+        ],
+        goods_sort: [
+          { required: true, message: '请输入产品序号', trigger: 'blur' }
+        ],
+        goods_weight: [
+          { required: true, message: '请输入机器重量', trigger: 'blur' }
+        ],
+        goods_dimensions: [
+          { required: true, message: '请输入外形尺寸', trigger: 'blur' }
+        ],
+        goods_cat: [
+          { required: true, message: '请选择商品分类', trigger: 'blur' }
+        ]
       },
       cateList: [],
       value: '',
@@ -189,9 +193,7 @@ export default {
         return false
       }
     },
-    TabClicked () {
-      console.log(this.activeIndex)
-    },
+    TabClicked () {},
     beforeAvatarUpload (file) {
       const isJPG = file.type === 'image/jpeg'
       const isLt2M = file.size / 1024 / 1024 < 0.5
@@ -206,15 +208,9 @@ export default {
     handleSuccess (res) {
       this.$message.success('上传产品图片成功!')
       this.addForm.pic = res.img
-      console.log(this.addForm.pic)
     },
     onError (res) {
-      alert('创建失败', '提示', {
-        confirmButtonText: '确定',
-        callback: action => {
-          console.log('上传失败')
-        }
-      })
+      this.$message.error('上传产品图片失败!')
     },
     handlechange (file, fileList) {
       if (fileList.length > 0) {
@@ -233,14 +229,13 @@ export default {
     },
     async addGood () {
       const form = _.cloneDeep(this.addForm)
-      form.goods_cat = form.goods_cat.join(',')
-      form.attrs = this.addForm.attrs
-      const { data: res } = await this.$http.post('goods', form)
-      if (res.meta.status !== 201) {
-        return this.$message.error(res.meta.msg)
-      }
-      this.$message.success(res.meta.msg)
-      this.$router.push('/goods')
+      addgoods(form).then(res => {
+        if (res.code !== 200) {
+          return this.$message.error(res.message)
+        }
+        this.$message.success(res.message)
+        this.$router.push('/goods')
+      })
     }
   }
 }

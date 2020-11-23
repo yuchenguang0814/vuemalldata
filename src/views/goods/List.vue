@@ -26,7 +26,7 @@
         <el-table-column label="商品序号" prop="sort"></el-table-column>
         <el-table-column label="商品缩略图" prop="image">
           <template slot-scope="scope">
-            <img :src="scope.row.image" alt="" width="140px" height="auto">
+            <img :src="`http://localhost:3000/uploads/goodspics/${scope.row.image}`" alt="" width="140px" height="auto">
           </template>
         </el-table-column>
         <el-table-column label="商品名称" prop="name"></el-table-column>
@@ -38,7 +38,7 @@
         </el-table-column>
         <el-table-column label="操作" width="130px">
           <template slot-scope="scope">
-              <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+              <el-button type="primary" icon="el-icon-edit" size="mini" @click ="goEditPage(scope.row.id)"></el-button>
               <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeGoodById(scope.row.id)"></el-button>
           </template>
         </el-table-column>
@@ -48,7 +48,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="queryInfo.pagenum"
-        :page-sizes="[1, 2, 3, 4]"
+        :page-sizes="[5, 10, 15, 20]"
         :page-size="queryInfo.pagesize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
@@ -65,7 +65,7 @@ export default {
       queryInfo: {
         query: '',
         pagenum: 1,
-        pagesize: 3
+        pagesize: 5
       },
       List: [],
       goodList: [],
@@ -120,6 +120,9 @@ export default {
     },
     goAddPage () {
       this.$router.push('/goods/add')
+    },
+    goEditPage (id) {
+      this.$router.push('/goods/edit/' + id)
     }
   }
 }

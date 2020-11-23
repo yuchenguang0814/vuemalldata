@@ -6,6 +6,7 @@ const Login = () => import('@/views/Login.vue')
 const Users = () => import('@/views/user/Users.vue')
 const Goods = () => import('@/views/goods/List.vue')
 const GoodsAdd = () => import('@/views/goods/Add.vue')
+const GoodsEdit = () => import('@/views/goods/Edit.vue')
 
 Vue.use(VueRouter)
 
@@ -38,6 +39,10 @@ const routes = [
       {
         path: '/goods/add',
         component: GoodsAdd
+      },
+      {
+        path: '/goods/edit/:id',
+        component: GoodsEdit
       }
     ]
   }
