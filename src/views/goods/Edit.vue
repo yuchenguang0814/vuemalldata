@@ -25,31 +25,31 @@
           <el-input v-model="editForm.dimensions"></el-input>
         </el-form-item>
         <el-form-item label="请选择商品所属分类" prop="good_cat">
-          <el-select v-model="editForm.good_cat" placeholder="请选择商品类别">
+          <el-select v-model="editForm.c_id" placeholder="请选择商品类别">
             <el-option
               v-for="item in cateList"
-              :key="item.id"
+              :key="item.cid"
               :label="item.pageName"
-              :value="item.id"
+              :value="item.cid"
               >
             </el-option>
           </el-select>
         </el-form-item>
         <el-alert show-icon title="为了更好的优化，请填写下面这些信息" type="warning" :closable="false" class="key_alert"></el-alert>
         <el-form-item label="产品页面标题" prop="good_title">
-          <el-input v-model="editForm.good_title"></el-input>
+          <el-input v-model="editForm.pageTitle"></el-input>
         </el-form-item>
         <el-form-item label="产品页面关键词" prop="good_key">
-          <el-input v-model="editForm.good_key"></el-input>
+          <el-input v-model="editForm.pageKey"></el-input>
         </el-form-item>
         <el-form-item label="产品页面描述" prop="good_description">
-          <el-input v-model="editForm.good_description" type="textarea"></el-input>
+          <el-input v-model="editForm.pageDescription" type="textarea"></el-input>
         </el-form-item>
         <el-form-item label="产品概述" prop="good_overview">
-          <el-input v-model="editForm.good_overview" type="textarea"></el-input>
+          <el-input v-model="editForm.overView" type="textarea"></el-input>
         </el-form-item>
         <el-form-item label="产品特点" prop="good_advantage">
-          <el-input v-model="editForm.good_advantage" type="textarea"></el-input>
+          <el-input v-model="editForm.advantage" type="textarea"></el-input>
         </el-form-item>
         <el-alert show-icon title="图片尺寸560*350" type="warning" :closable="false" class="key_alert"></el-alert>
         <el-upload
@@ -58,7 +58,6 @@
         :file-list="fileList"
         :before-upload="beforeAvatarUpload"
         :on-change="handlechange"
-        :on-preview="handlePreview"
         :on-remove="handleRemove"
         list-type="picture"
         :on-error="onError"
@@ -68,21 +67,21 @@
           <el-button size="small" type="primary">点击上传</el-button>
           <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
         </el-upload>
+        <el-card title="图片预览" v-show="previewVisible">
+          <img :src="previewPath" alt="previewPath">
+        </el-card>
         <quill-editor
-        v-model="editForm.good_content"
+        v-model="editForm.content"
         ref="richAnalysis" :options="options"></quill-editor>
         <el-button type="primary" class="btnAdd" @click="editGood">修改商品</el-button>
       </el-form>
     </el-card>
-    <el-dialog title="图片预览" :visible.sync="previewVisible" width="50%">
-      <img :src="previewPath" alt="previewPath" style="width: 100%">
-    </el-dialog>
   </div>
 </template>
 
 <script>
 import { quillEditor } from 'vue-quill-editor'
-import { getGoodsCate, getGood } from '../../network/goods'
+import { getGoodsCate, getGood, editGood } from '../../network/goods'
 // 导入富文本编辑器样式
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
@@ -102,19 +101,19 @@ export default {
       editForm: {
       },
       editFormRules: {
-        good_name: [
+        name: [
           { required: true, message: '请输入产品名称', trigger: 'blur' }
         ],
-        good_sort: [
+        sort: [
           { required: true, message: '请输入产品序号', trigger: 'blur' }
         ],
-        good_weight: [
+        weight: [
           { required: true, message: '请输入机器重量', trigger: 'blur' }
         ],
-        good_dimensions: [
+        dimensions: [
           { required: true, message: '请输入外形尺寸', trigger: 'blur' }
         ],
-        good_cat: [
+        c_id: [
           { required: true, message: '请选择商品分类', trigger: 'blur' }
         ]
       },
@@ -125,13 +124,12 @@ export default {
         Authorization: window.sessionStorage.getItem('token')
       },
       previewPath: '',
-      previewVisible: false,
+      previewVisible: true,
       fileList: []
     }
   },
   watch: {
     editForm () {
-      console.log(this.editForm)
     }
   },
   created () {
@@ -144,23 +142,9 @@ export default {
     getGoodList () {
       getGood(this.$route.params).then(res => {
         this.editForm = res.data[0]
+        this.previewPath = this.editForm.image
+        this.editForm.pic = this.editForm.image
       })
-    },
-    beforeTabLeave (activeName, oldActiveName) {
-      let valBoolean = false
-      let varObject = ''
-      this.$refs.editFormRef.validate((boolean, object) => {
-        valBoolean = boolean
-        varObject = object
-      })
-      if (!valBoolean) {
-        const varMessage = []
-        for (const key in varObject) {
-          varMessage.push(varObject[key][0].message)
-        }
-        this.$message.error(varMessage[0])
-        return false
-      }
     },
     beforeAvatarUpload (file) {
       const isJPG = file.type === 'image/jpeg'
@@ -175,6 +159,7 @@ export default {
     },
     handleSuccess (res) {
       this.$message.success('上传产品图片成功!')
+      this.previewVisible = false
       this.editForm.pic = res.img
     },
     onError (res) {
@@ -186,17 +171,16 @@ export default {
       }
       this.$refs.upload.submit()
     },
-    handlePreview (file) {
-      this.previewPath = file.response.data.url
-      this.previewVisible = true
-    },
     handleRemove (file) {
       const filePath = file.response.data.tmp_path
       const index = this.editForm.pics.findIndex(x => x.pic === filePath)
       this.editForm.pics.splice(index, 1)
     },
     editGood () {
-      console.log('修改商品')
+      editGood(this.editForm).then(res => {
+        this.$message.success(res.message)
+        this.$router.push('/goods')
+      })
     }
   }
 }

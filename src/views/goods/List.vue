@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { getGoods } from '../../network/goods'
+import { getGoods, removegood } from '../../network/goods'
 export default {
   data () {
     return {
@@ -71,7 +71,8 @@ export default {
       goodList: [],
       cateList: [],
       total: 0,
-      value: ''
+      value: '',
+      goodsId: {}
     }
   },
   watch: {
@@ -102,7 +103,7 @@ export default {
       this.queryInfo.query = { cid: id }
       this.getGoodList()
     },
-    async removeGoodById (goodsId) {
+    async removeGoodById (id) {
       const confirmResult = await this.$confirm('此操作将删除商品, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -111,11 +112,15 @@ export default {
       if (confirmResult !== 'confirm') {
         return this.$message.info('已取消删除')
       }
-      const { data: res } = await this.$http.delete('goods/' + goodsId)
-      if (res.meta.status !== 200) {
-        return this.$message.error(res.meta.msg)
-      }
-      this.$message.success(res.meta.msg)
+      // const { data: res } = await this.$http.delete('goods/' + goodsId)
+      // if (res.meta.status !== 200) {
+      //   return this.$message.error(res.meta.msg)
+      // }
+      // this.$message.success(res.meta.msg)
+      this.goodsId = { goodsId: id }
+      removegood(this.goodsId).then(res => {
+        console.log(res)
+      })
       this.getGoodList()
     },
     goAddPage () {

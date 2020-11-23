@@ -11,6 +11,13 @@ export function getGood (data) {
     params: data
   })
 }
+export function editGood (data) {
+  return request({
+    method: 'post',
+    url: '/good',
+    data: data
+  })
+}
 export function addgoods (data) {
   return request({
     method: 'post',
@@ -18,7 +25,12 @@ export function addgoods (data) {
     data: data
   })
 }
-
+export function removegood (data) {
+  return request({
+    url: '/removegood',
+    params: data
+  })
+}
 export function getGoodsCate () {
   return request({
     url: '/goodsCate'
