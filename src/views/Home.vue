@@ -121,7 +121,8 @@ export default {
         101: 'iconfont icon-shangpin',
         102: 'iconfont icon-danju',
         154: 'iconfont icon-danju',
-        145: 'iconfont icon-baobiao'
+        145: 'iconfont icon-baobiao',
+        165: 'iconfont icon-tijikongjian'
       },
       isCollapse: false,
       activPath: ''

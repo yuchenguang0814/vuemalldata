@@ -36,3 +36,10 @@ export function getGoodsCate () {
     url: '/goodsCate'
   })
 }
+export function AddCate (data) {
+  return request({
+    method: 'post',
+    url: '/cate',
+    data: data
+  })
+}
