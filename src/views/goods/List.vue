@@ -11,9 +11,9 @@
           <el-select v-model="value" placeholder="请选择商品类别" @change = handleChange>
             <el-option
               v-for="item in cateList"
-              :key="item.id"
+              :key="item.cid"
               :label="item.pageName"
-              :value="item.id"
+              :value="item.cid"
               >
             </el-option>
           </el-select>
@@ -26,7 +26,7 @@
         <el-table-column label="商品序号" prop="sort"></el-table-column>
         <el-table-column label="商品缩略图" prop="image">
           <template slot-scope="scope">
-            <img :src="`http://localhost:3000/uploads/goodspics/${scope.row.image}`" alt="" width="140px" height="auto">
+            <img :src="`http://localhost:3000${scope.row.image}`" alt="" width="140px" height="auto">
           </template>
         </el-table-column>
         <el-table-column label="商品名称" prop="name"></el-table-column>
@@ -112,14 +112,9 @@ export default {
       if (confirmResult !== 'confirm') {
         return this.$message.info('已取消删除')
       }
-      // const { data: res } = await this.$http.delete('goods/' + goodsId)
-      // if (res.meta.status !== 200) {
-      //   return this.$message.error(res.meta.msg)
-      // }
-      // this.$message.success(res.meta.msg)
       this.goodsId = { goodsId: id }
       removegood(this.goodsId).then(res => {
-        console.log(res)
+        this.$message.success(res.message)
       })
       this.getGoodList()
     },

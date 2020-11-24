@@ -39,9 +39,9 @@
               <el-select v-model="addForm.goods_cat" placeholder="请选择商品类别">
                 <el-option
                   v-for="item in cateList"
-                  :key="item.id"
+                  :key="item.cid"
                   :label="item.pageName"
-                  :value="item.id"
+                  :value="item.cid"
                   >
                 </el-option>
               </el-select>
@@ -207,7 +207,7 @@ export default {
     },
     handleSuccess (res) {
       this.$message.success('上传产品图片成功!')
-      this.addForm.pic = res.img
+      this.addForm.pic = '/uploads/goodspics/' + res.img
     },
     onError (res) {
       this.$message.error('上传产品图片失败!')

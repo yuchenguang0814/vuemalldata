@@ -104,14 +104,14 @@ export default {
       },
       addFormRules: {
         attr_name: [
-          { required: true, message: `请输入要添加的名称`, trigger: 'blur' }
+          { required: true, message: '请输入要添加的名称', trigger: 'blur' }
         ]
       },
       editDialogVisible: false,
       editForm: [],
       editFormRules: {
         attr_name: [
-          { required: true, message: `请输入要修改的名称`, trigger: 'blur' }
+          { required: true, message: '请输入要修改的名称', trigger: 'blur' }
         ]
       }
     }

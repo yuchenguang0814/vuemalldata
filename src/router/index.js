@@ -7,6 +7,8 @@ const Users = () => import('@/views/user/Users.vue')
 const Goods = () => import('@/views/goods/List.vue')
 const GoodsAdd = () => import('@/views/goods/Add.vue')
 const GoodsEdit = () => import('@/views/goods/Edit.vue')
+const GoodsCate = () => import('@/views/goods/Cate.vue')
+const CateParams = () => import('@/views/goods/Params.vue')
 
 Vue.use(VueRouter)
 
@@ -43,6 +45,14 @@ const routes = [
       {
         path: '/goods/edit/:id',
         component: GoodsEdit
+      },
+      {
+        path: '/params',
+        component: CateParams
+      },
+      {
+        path: '/cate',
+        component: GoodsCate
       }
     ]
   }

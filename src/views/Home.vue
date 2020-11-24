@@ -49,7 +49,12 @@ export default {
           authName: '页面列表',
           id: 111,
           path: 'page'
-        }],
+        }, {
+          authName: '轮播图列表',
+          id: 112,
+          path: 'banner'
+        }
+        ],
         id: 103,
         path: 'page'
       }, {
@@ -59,13 +64,9 @@ export default {
           id: 104,
           path: 'goods'
         }, {
-          authName: '分类参数',
-          id: 115,
-          path: 'params'
-        }, {
           authName: '商品分类',
-          id: 121,
-          path: '商品分类'
+          id: 115,
+          path: 'cate'
         }],
         id: 101,
         path: 'goods'
@@ -78,6 +79,32 @@ export default {
         }],
         id: 102,
         path: 'orders'
+      }, {
+        authName: '新闻中心',
+        children: [{
+          authName: '新闻列表',
+          id: 155,
+          path: 'news'
+        }, {
+          authName: '视频列表',
+          id: 156,
+          path: 'videos'
+        }],
+        id: 154,
+        path: 'news'
+      }, {
+        authName: '关于我们',
+        children: [{
+          authName: '荣誉中心',
+          id: 167,
+          path: 'news'
+        }, {
+          authName: '工厂实景',
+          id: 166,
+          path: 'videos'
+        }],
+        id: 165,
+        path: 'news'
       }, {
         authName: '数据统计',
         children: [{
@@ -93,6 +120,7 @@ export default {
         103: 'iconfont icon-tijikongjian',
         101: 'iconfont icon-shangpin',
         102: 'iconfont icon-danju',
+        154: 'iconfont icon-danju',
         145: 'iconfont icon-baobiao'
       },
       isCollapse: false,
