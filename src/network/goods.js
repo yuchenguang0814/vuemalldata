@@ -43,3 +43,22 @@ export function AddCate (data) {
     data: data
   })
 }
+export function getCateById (data) {
+  return request({
+    url: '/cate',
+    params: { id: data }
+  })
+}
+export function editCate (data) {
+  return request({
+    method: 'post',
+    url: '/editcate',
+    data: data
+  })
+}
+export function removeCate (data) {
+  return request({
+    url: '/removecate',
+    params: data
+  })
+}

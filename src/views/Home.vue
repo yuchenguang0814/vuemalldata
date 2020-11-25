@@ -71,15 +71,6 @@ export default {
         id: 101,
         path: 'goods'
       }, {
-        authName: '在线留言',
-        children: [{
-          authName: '留言列表',
-          id: 107,
-          path: 'orders'
-        }],
-        id: 102,
-        path: 'orders'
-      }, {
         authName: '新闻中心',
         children: [{
           authName: '新闻列表',
@@ -97,14 +88,23 @@ export default {
         children: [{
           authName: '荣誉中心',
           id: 167,
-          path: 'news'
+          path: 'honor'
         }, {
           authName: '工厂实景',
           id: 166,
-          path: 'videos'
+          path: 'factory'
         }],
         id: 165,
         path: 'news'
+      }, {
+        authName: '在线留言',
+        children: [{
+          authName: '留言列表',
+          id: 107,
+          path: 'orders'
+        }],
+        id: 102,
+        path: 'orders'
       }, {
         authName: '数据统计',
         children: [{

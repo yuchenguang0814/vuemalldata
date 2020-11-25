@@ -15,19 +15,19 @@
         <el-table-column label="商品序号" prop="pagePath"></el-table-column>
         <el-table-column label="分类小图" prop="simage">
           <template slot-scope="scope">
-            <img :src="`${scope.row.pageTitleImage}`" alt="" width="140px" height="auto">
+            <img :src="`${baseUrl+scope.row.pageTitleImage}`" alt="" width="140px" height="auto">
           </template>
         </el-table-column>
         <el-table-column label="分类大图" prop="simage">
           <template slot-scope="scope">
-            <img :src="`${scope.row.pageImage}`" alt="" height="140px" width="auto">
+            <img :src="`${baseUrl+scope.row.pageImage}`" alt="" height="140px" width="auto">
           </template>
         </el-table-column>
         <el-table-column label="分类名称" prop="pageName"></el-table-column>
         <el-table-column label="操作" width="130px">
-          <template>
-              <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
-              <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+          <template slot-scope="scope">
+              <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditCateDialogVisible(scope.row.cid)"></el-button>
+              <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeCateById(scope.row.cid)"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -74,7 +74,7 @@
             :before-upload="beforeAvatarUpload"
             :on-change="handlechangeBig"
             :on-preview="handlePreview"
-            :on-remove="handleRemove"
+            :on-remove="handleRemoveBig"
             list-type="picture"
             :on-error="onError"
             :headers="headerObj"
@@ -90,33 +90,112 @@
         <el-button type="primary" @click="addCateInfo">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="修改分类" :visible.sync="editCateDialogVisible" width="50%" @close="editCateDialogVisibleClosed">
+      <el-form :model="editCateForm" :rules="editCateFormRules" ref="editCateFormRef" label-width="100px">
+        <el-form-item label="分类名称：" prop="pageName">
+          <el-input v-model="editCateForm.pageName"></el-input>
+        </el-form-item>
+        <el-form-item label="分类序号" prop="pagePath">
+          <el-input v-model="editCateForm.pagePath" type="number"></el-input>
+        </el-form-item>
+        <el-form-item label="SEO关键词" prop="pageKey">
+          <el-input v-model="editCateForm.pageKey"></el-input>
+        </el-form-item>
+        <el-form-item label="SEO描述" prop="pageDescription">
+          <el-input v-model="editCateForm.pageDescription"></el-input>
+        </el-form-item>
+        <el-form-item label="分类小图">
+            <el-alert show-icon title="图片尺寸560*350" type="warning" :closable="false" class="key_alert"></el-alert>
+            <el-upload
+            :action="uploadURL"
+            ref="eupload"
+            :file-list="efileList"
+            :before-upload="beforeAvatarUpload"
+            :on-change="ehandlechange"
+            :on-preview="handlePreview"
+            :on-remove="ehandleRemove"
+            list-type="picture"
+            :on-error="onError"
+            :headers="headerObj"
+            :auto-upload="false"
+            :on-success="ehandleSuccess">
+              <el-button size="small" type="primary">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            </el-upload>
+            <el-card title="图片预览" v-show="previewVisible">
+              <img :src="`${baseUrl+previewPath}`" alt="previewPath">
+            </el-card>
+        </el-form-item>
+        <el-form-item label="分类大图">
+            <el-alert show-icon title="图片尺寸560*350" type="warning" :closable="false" class="key_alert"></el-alert>
+            <el-upload
+            :action="uploadURL"
+            ref="euploadBig"
+            :file-list="efileListBig"
+            :before-upload="beforeAvatarUpload"
+            :on-change="ehandlechangeBig"
+            :on-preview="handlePreview"
+            :on-remove="ehandleRemoveBig"
+            list-type="picture"
+            :on-error="onError"
+            :headers="headerObj"
+            :auto-upload="false"
+            :on-success="ehandleSuccessBig">
+              <el-button size="small" type="primary">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            </el-upload>
+            <el-card title="图片预览" v-show="previewVisibleBig">
+              <img :src="`${baseUrl+previewPathBig}`" alt="previewPath" height="140px">
+            </el-card>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editCateDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editCateInfo">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getGoodsCate, AddCate } from '../../network/goods'
+import { getGoodsCate, AddCate, getCateById, editCate, removeCate } from '../../network/goods'
 export default {
   data () {
     return {
+      previewVisible: true,
+      previewVisibleBig: true,
+      previewPath: '',
+      previewPathBig: '',
       uploadURL: 'http://127.0.0.1:3000/upload',
+      baseUrl: 'http://127.0.0.1:3000',
       headerObj: {
         Authorization: 'goodsCateImage'
       },
       fileList: [],
       fileListBig: [],
+      efileList: [],
+      efileListBig: [],
       cateList: [],
       addCateDialogVisible: false,
+      editCateDialogVisible: false,
       addCateForm: {
         pageDescription: '',
         pageId: 1,
         pageImage: '',
         pageKey: '',
         pageName: '',
-        pagePath: 0,
+        pagePath: '',
         pageTitleImage: ''
       },
+      editCateForm: {
+      },
       addCateFormRules: {
-        cat_name: [
+        pageName: [
+          { required: true, message: '请输入分类名称', trigger: 'blur' }
+        ]
+      },
+      editCateFormRules: {
+        pageName: [
           { required: true, message: '请输入分类名称', trigger: 'blur' }
         ]
       }
@@ -130,25 +209,35 @@ export default {
       const isJPG = file.type === 'image/jpeg'
       const isLt2M = file.size / 1024 / 1024 < 0.5
       if (!isJPG) {
-        this.$message.error('上传产品图片只能是 JPG 格式!')
+        this.$message.error('上传分类图片只能是 JPG 格式!')
       }
       if (!isLt2M) {
-        this.$message.error('上传产品图片大小不能超过 500KB!')
+        this.$message.error('上传分类图片大小不能超过 500KB!')
       }
       return isJPG && isLt2M
     },
     handleSuccess (res) {
-      this.$message.success('上传产品图片成功!')
+      this.$message.success('上传分类图片成功!')
       this.addCateForm.pageTitleImage = '/uploads/catespics/' + res.img
-      console.log(this.addCateForm.pageTitleImage)
     },
     handleSuccessBig (res) {
-      this.$message.success('上传产品图片成功!')
+      this.$message.success('上传分类图片成功!')
       this.addCateForm.pageImage = '/uploads/catespics/' + res.img
     },
-    onError (res) {
-      this.$message.error('上传产品图片失败!')
+    ehandleSuccess (res) {
+      this.$message.success('上传分类图片成功!')
+      this.previewVisible = false
+      this.editCateForm.pageTitleImage = '/uploads/catespics/' + res.img
     },
+    ehandleSuccessBig (res) {
+      this.$message.success('上传分类图片成功!')
+      this.previewVisibleBig = false
+      this.editCateForm.pageImage = '/uploads/catespics/' + res.img
+    },
+    onError (res) {
+      this.$message.error('上传分类图片失败!')
+    },
+    handlePreview (file) {},
     handlechange (file, fileList) {
       if (fileList.length > 0) {
         this.fileList = [fileList[fileList.length - 1]]
@@ -161,10 +250,29 @@ export default {
       }
       this.$refs.uploadBig.submit()
     },
+    ehandlechange (file, fileList) {
+      if (fileList.length > 0) {
+        this.efileList = [fileList[fileList.length - 1]]
+      }
+      this.$refs.eupload.submit()
+    },
+    ehandlechangeBig (file, fileList) {
+      if (fileList.length > 0) {
+        this.efileListBig = [fileList[fileList.length - 1]]
+      }
+      this.$refs.euploadBig.submit()
+    },
     handleRemove (file) {
-      const filePath = file.response.data.tmp_path
-      const index = this.addForm.pics.findIndex(x => x.pic === filePath)
-      this.addForm.pics.splice(index, 1)
+      this.addCateForm.pageTitleImage = ''
+    },
+    handleRemoveBig (file) {
+      this.addCateForm.pageImage = ''
+    },
+    ehandleRemove (file) {
+      this.addCateForm.pageTitleImage = ''
+    },
+    ehandleRemoveBig (file) {
+      this.addCateForm.pageImage = ''
     },
     getCateList () {
       getGoodsCate().then(res => {
@@ -177,6 +285,21 @@ export default {
     addCateDialogVisibleClosed () {
       this.$refs.addCateFormRef.resetFields()
     },
+    showEditCateDialogVisible (id) {
+      this.efileList = []
+      this.efileListBig = []
+      this.previewVisible = true
+      this.previewVisibleBig = true
+      getCateById(id).then(res => {
+        this.editCateForm = res.data[0]
+        this.previewPathBig = this.editCateForm.pageImage
+        this.previewPath = this.editCateForm.pageTitleImage
+        this.editCateDialogVisible = true
+      })
+    },
+    editCateDialogVisibleClosed () {
+      this.$refs.editCateFormRef.resetFields()
+    },
     addCateInfo () {
       this.$refs.addCateFormRef.validate(async valid => {
         if (!valid) return
@@ -186,6 +309,32 @@ export default {
           this.getCateList()
         })
       })
+    },
+    editCateInfo () {
+      this.$refs.editCateFormRef.validate(async valid => {
+        if (!valid) return
+        editCate(this.editCateForm).then(res => {
+          this.$message.success(res.message)
+          this.editCateDialogVisible = false
+          this.getCateList()
+        })
+      })
+    },
+    async removeCateById (id) {
+      const confirmResult = await this.$confirm('此操作将删除此分类, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已取消删除')
+      }
+      this.cateId = { cid: id }
+      console.log(this.cateId)
+      removeCate(this.cateId).then(res => {
+        this.$message.success(res.message)
+      })
+      this.getCateList()
     }
   }
 }

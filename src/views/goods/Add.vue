@@ -156,7 +156,7 @@ export default {
       value: '',
       uploadURL: 'http://127.0.0.1:3000/upload',
       headerObj: {
-        Authorization: window.sessionStorage.getItem('token')
+        Authorization: 'goodsImage'
       },
       previewPath: '',
       previewVisible: false,
