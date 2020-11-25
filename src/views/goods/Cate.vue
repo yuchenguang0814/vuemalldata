@@ -15,12 +15,12 @@
         <el-table-column label="商品序号" prop="pagePath"></el-table-column>
         <el-table-column label="分类小图" prop="simage">
           <template slot-scope="scope">
-            <img :src="`${baseUrl+scope.row.pageTitleImage}`" alt="" width="140px" height="auto">
+            <img :src="`${$baseUrl+scope.row.pageTitleImage}`" alt="" width="140px" height="auto">
           </template>
         </el-table-column>
         <el-table-column label="分类大图" prop="simage">
           <template slot-scope="scope">
-            <img :src="`${baseUrl+scope.row.pageImage}`" alt="" height="140px" width="auto">
+            <img :src="`${$baseUrl+scope.row.pageImage}`" alt="" height="140px" width="auto">
           </template>
         </el-table-column>
         <el-table-column label="分类名称" prop="pageName"></el-table-column>
@@ -123,7 +123,7 @@
               <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
             </el-upload>
             <el-card title="图片预览" v-show="previewVisible">
-              <img :src="`${baseUrl+previewPath}`" alt="previewPath">
+              <img :src="`${$baseUrl+previewPath}`" alt="previewPath">
             </el-card>
         </el-form-item>
         <el-form-item label="分类大图">
@@ -145,7 +145,7 @@
               <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
             </el-upload>
             <el-card title="图片预览" v-show="previewVisibleBig">
-              <img :src="`${baseUrl+previewPathBig}`" alt="previewPath" height="140px">
+              <img :src="`${$baseUrl+previewPathBig}`" alt="previewPath" height="140px">
             </el-card>
         </el-form-item>
       </el-form>
@@ -167,7 +167,6 @@ export default {
       previewPath: '',
       previewPathBig: '',
       uploadURL: 'http://127.0.0.1:3000/upload',
-      baseUrl: 'http://127.0.0.1:3000',
       headerObj: {
         Authorization: 'goodsCateImage'
       },

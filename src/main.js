@@ -9,6 +9,7 @@ import './assets/css/global.css'
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
+Vue.prototype.$baseUrl = 'http://localhost:3000'
 
 Vue.filter('dateFormat', function (originVal) {
   const dt = new Date(originVal)

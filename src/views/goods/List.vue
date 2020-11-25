@@ -26,7 +26,7 @@
         <el-table-column label="商品序号" prop="sort"></el-table-column>
         <el-table-column label="商品缩略图" prop="image">
           <template slot-scope="scope">
-            <img :src="`http://localhost:3000${scope.row.image}`" alt="" width="140px" height="auto">
+            <img :src="`${$baseUrl + scope.row.image}`" alt="" width="140px" height="auto">
           </template>
         </el-table-column>
         <el-table-column label="商品名称" prop="name"></el-table-column>

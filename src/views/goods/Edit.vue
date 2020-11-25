@@ -142,7 +142,7 @@ export default {
     getGoodList () {
       getGood(this.$route.params).then(res => {
         this.editForm = res.data[0]
-        this.previewPath = this.editForm.image
+        this.previewPath = this.$baseUrl + this.editForm.image
         this.editForm.pic = this.editForm.image
       })
     },
@@ -160,7 +160,7 @@ export default {
     handleSuccess (res) {
       this.$message.success('上传产品图片成功!')
       this.previewVisible = false
-      this.editForm.pic = res.img
+      this.editForm.pic = '/uploads/goodspics/' + res.img
     },
     onError (res) {
       this.$message.error('上传产品图片失败!')
