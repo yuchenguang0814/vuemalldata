@@ -7,8 +7,8 @@
     </el-breadcrumb>
     <el-card class="box-card">
       <el-form :label-position="labelPosition" label-width="80px" :model="editUserForm">
-        <el-form-item label="联系人">
-          <el-input v-model="editUserForm.userName"></el-input>
+        <el-form-item label="联系人" prop ="name">
+          <el-input v-model="editUserForm.name"></el-input>
         </el-form-item>
         <el-form-item label="邮箱">
           <el-input v-model="editUserForm.userEmail"></el-input>
@@ -27,7 +27,7 @@
         </el-form-item>
         <el-button type="primary" >修改用户信息</el-button>
         <el-button type="primary" @click="editPassworddialogVisible = true">修改密码</el-button>
-        <el-button type="primary">更换公司logo</el-button>
+        <el-button type="primary" @click="editLogodialogVisible = true">更换公司logo</el-button>
       </el-form>
     </el-card>
     <el-dialog
@@ -41,6 +41,17 @@
         <el-button type="primary" @click="editPassword">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      title="修改logo"
+      :visible.sync="editLogodialogVisible"
+      width="50%"
+      :before-close="handleClose">
+      <span>上传组件</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editLogodialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editLogo">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -50,10 +61,12 @@ export default {
   },
   data () {
     return {
+      userInfo: {},
       editPassworddialogVisible: false,
+      editLogodialogVisible: false,
       labelPosition: 'left',
       editUserForm: {
-        userName: '',
+        userName: '1231',
         userEmail: '',
         userPhone: '',
         userQQ: '',
@@ -61,6 +74,10 @@ export default {
         companyAddress: ''
       }
     }
+  },
+  created () {
+    this.editUserForm = window.sessionStorage.getItem('users')
+    console.log(this.editUserForm)
   },
   methods: {
     handleClose (done) {
@@ -74,6 +91,9 @@ export default {
       console.log(this.editUserForm)
     },
     editPassword () {
+      console.log(this.editUserForm)
+    },
+    editLogo () {
       console.log(this.editUserForm)
     }
   }

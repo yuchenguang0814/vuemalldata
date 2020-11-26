@@ -30,7 +30,7 @@
           </template>
         </el-table-column>
         <el-table-column label="商品名称" prop="name"></el-table-column>
-        <el-table-column label="商品类别" prop="pageName" width="120px"></el-table-column>
+        <!-- <el-table-column label="商品类别" prop="pageName" width="120px"></el-table-column> -->
         <el-table-column label="创建时间" prop="add_time" width="160px">
           <template slot-scope="scope">
             {{scope.row.add_time | dateFormat}}

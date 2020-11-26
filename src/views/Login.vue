@@ -37,20 +37,6 @@ export default {
           { required: true, message: '请输入登录密码', trigger: 'blur' },
           { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
         ]
-      },
-      res: {
-        data: {
-          id: 510,
-          rid: 0,
-          username: 'yuchen',
-          mobile: '18968919292',
-          email: '546448821@qq.com',
-          token: '12322112'
-        },
-        meta: {
-          msg: '登录成功',
-          status: 200
-        }
       }
     }
   },
@@ -65,6 +51,7 @@ export default {
           if (res.code !== 200) return this.$message.error(res.message)
           this.$message.success(res.message)
           window.sessionStorage.setItem('token', res.session)
+          window.sessionStorage.setItem('users', res.data[0])
           this.$router.push('home')
         })
       })
