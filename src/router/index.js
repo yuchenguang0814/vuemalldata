@@ -8,6 +8,7 @@ const Goods = () => import('@/views/goods/List.vue')
 const GoodsAdd = () => import('@/views/goods/Add.vue')
 const GoodsEdit = () => import('@/views/goods/Edit.vue')
 const GoodsCate = () => import('@/views/goods/Cate.vue')
+const PageList = () => import('@/views/pagesInfo/List.vue')
 
 Vue.use(VueRouter)
 
@@ -48,6 +49,10 @@ const routes = [
       {
         path: '/cate',
         component: GoodsCate
+      },
+      {
+        path: '/page',
+        component: PageList
       }
     ]
   }

@@ -51,7 +51,7 @@ export default {
           if (res.code !== 200) return this.$message.error(res.message)
           this.$message.success(res.message)
           window.sessionStorage.setItem('token', res.session)
-          window.sessionStorage.setItem('users', res.data[0])
+          window.sessionStorage.setItem('users', JSON.stringify(res.data[0]))
           this.$router.push('home')
         })
       })

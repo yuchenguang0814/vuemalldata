@@ -76,8 +76,7 @@ export default {
     }
   },
   created () {
-    this.editUserForm = window.sessionStorage.getItem('users')
-    console.log(this.editUserForm)
+    this.editUserForm = JSON.parse(window.sessionStorage.getItem('users'))
   },
   methods: {
     handleClose (done) {
