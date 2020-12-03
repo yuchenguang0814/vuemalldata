@@ -4,3 +4,9 @@ export function GetPageMultidata () {
     url: '/page'
   })
 }
+export function GetPageMultidataById (data) {
+  return request({
+    url: '/getpage',
+    params: data
+  })
+}
