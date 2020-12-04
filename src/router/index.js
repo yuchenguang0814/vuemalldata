@@ -9,7 +9,7 @@ const GoodsAdd = () => import('@/views/goods/Add.vue')
 const GoodsEdit = () => import('@/views/goods/Edit.vue')
 const GoodsCate = () => import('@/views/goods/Cate.vue')
 const PageList = () => import('@/views/pagesInfo/List.vue')
-
+const Banner = () => import('@/views/pagesInfo/Banner')
 Vue.use(VueRouter)
 
 const routes = [
@@ -53,6 +53,10 @@ const routes = [
       {
         path: '/page',
         component: PageList
+      },
+      {
+        path: '/banner',
+        component: Banner
       }
     ]
   }

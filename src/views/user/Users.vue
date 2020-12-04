@@ -45,8 +45,22 @@
       title="修改logo"
       :visible.sync="editLogodialogVisible"
       width="50%"
-      :before-close="handleClose">
-      <span>上传组件</span>
+      @close="handleLogoClose">
+      <el-upload
+            :action="uploadURL"
+            ref="editLogo"
+            :before-upload="beforeAvatarUpload"
+            :on-error="onError"
+            :headers="headerObj"
+            :on-success="handleSuccess"
+            list-type="picture"
+            :file-list="fileList"
+            :on-change="handlechange"
+            :auto-upload="false"
+            >
+              <el-button size="small" type="primary">点击上传logo</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+      </el-upload>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editLogodialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="editLogo">确 定</el-button>
@@ -61,7 +75,13 @@ export default {
   },
   data () {
     return {
+      uploadURL: 'http://127.0.0.1:3000/upload',
+      headerObj: {
+        Authorization: 'pageBanner'
+      },
+      fileList: [],
       userInfo: {},
+      logoImg: '',
       editPassworddialogVisible: false,
       editLogodialogVisible: false,
       labelPosition: 'left',
@@ -79,21 +99,42 @@ export default {
     this.editUserForm = JSON.parse(window.sessionStorage.getItem('users'))
   },
   methods: {
-    handleClose (done) {
-      this.$confirm('确认关闭？')
-        .then(_ => {
-          done()
-        })
-        .catch(_ => {})
+    beforeAvatarUpload (file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isLt2M = file.size / 1024 / 1024 < 0.5
+      if (!isJPG) {
+        this.$message.error('上传图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传图片大小不能超过 500KB!')
+      }
+      return isJPG && isLt2M
     },
+    handleSuccess (res) {
+      this.$message.success('上传LOGO图片成功!')
+      this.logoImg = '/uploads/banner/' + res.img
+    },
+    handlechange (file, fileList) {
+      if (fileList.length > 0) {
+        this.fileList = [fileList[fileList.length - 1]]
+      }
+      this.$refs.editLogo.submit()
+    },
+    onError (res) {
+      this.$message.error('上传LOGO图片失败!')
+    },
+    handleLogoClose () {
+      this.fileList = []
+    },
+    handleClose () {},
     editUser () {
-      console.log(this.editUserForm)
+      console.log(this.logoImg)
     },
     editPassword () {
       console.log(this.editUserForm)
     },
     editLogo () {
-      console.log(this.editUserForm)
+      console.log(this.logoImg)
     }
   }
 }

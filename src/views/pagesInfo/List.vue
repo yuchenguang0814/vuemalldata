@@ -128,9 +128,9 @@ export default {
     handlePreview (file) {},
     handlechange (file, fileList) {
       if (fileList.length > 0) {
-        this.fileListBig = [fileList[fileList.length - 1]]
+        this.fileList = [fileList[fileList.length - 1]]
       }
-      this.$refs.uploadBig.submit()
+      this.$refs.uploadPageBanner.submit()
     },
     handleRemove (file) {
       this.addCateForm.pageImage = ''
