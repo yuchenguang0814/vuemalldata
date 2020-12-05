@@ -1,6 +1,8 @@
 import { request } from './request'
-export function EditLogo () {
+export function EditUser (data) {
   return request({
-    url: '/logo',
+    method: 'post',
+    url: '/user',
+    data: data
   })
 }

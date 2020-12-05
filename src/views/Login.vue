@@ -52,6 +52,7 @@ export default {
           this.$message.success(res.message)
           window.sessionStorage.setItem('token', res.session)
           window.sessionStorage.setItem('users', JSON.stringify(res.data[0]))
+          window.sessionStorage.setItem('pass', this.LoginForm.password)
           this.$router.push('home')
         })
       })

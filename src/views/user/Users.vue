@@ -25,7 +25,7 @@
         <el-form-item label="公司地址">
           <el-input v-model="editUserForm.companyAddress"></el-input>
         </el-form-item>
-        <el-button type="primary" >修改用户信息</el-button>
+        <el-button type="primary" @click="editUser()">修改用户信息</el-button>
         <el-button type="primary" @click="editPassworddialogVisible = true">修改密码</el-button>
         <el-button type="primary" @click="editLogodialogVisible = true">更换公司logo</el-button>
       </el-form>
@@ -34,11 +34,21 @@
       title="修改密码"
       :visible.sync="editPassworddialogVisible"
       width="50%"
-      :before-close="handleClose">
-      <span>修改密码</span>
+      @close="handleClose">
+      <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px">
+        <el-form-item label="原始密码" prop="oldpass">
+          <el-input type="password" v-model="ruleForm.oldpass" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="新密码" prop="pass">
+          <el-input type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="确认新密码" prop="checkPass">
+          <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editPassworddialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editPassword">确 定</el-button>
+        <el-button type="primary" @click="editPassword('ruleForm')">确 定</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -46,6 +56,7 @@
       :visible.sync="editLogodialogVisible"
       width="50%"
       @close="handleLogoClose">
+      <img :src="`${$baseUrl + imgUrl}`" alt="" width="500px">
       <el-upload
             :action="uploadURL"
             ref="editLogo"
@@ -53,10 +64,7 @@
             :on-error="onError"
             :headers="headerObj"
             :on-success="handleSuccess"
-            list-type="picture"
-            :file-list="fileList"
-            :on-change="handlechange"
-            :auto-upload="false"
+            :show-file-list="false"
             >
               <el-button size="small" type="primary">点击上传logo</el-button>
               <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
@@ -70,49 +78,90 @@
 </template>
 
 <script>
+import { EditUser } from '../../network/user'
 export default {
   components: {
   },
   data () {
+    const validateOldPass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else if (value !== window.sessionStorage.getItem('pass')) {
+        callback(new Error('原始密码不正确'))
+      } else {
+        this.$refs.ruleForm.validateField('validateOldPass')
+        callback()
+      }
+    }
+    const validatePass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else if (value === this.ruleForm.oldpass) {
+        callback(new Error('新密码和原始密码一致'))
+      } else {
+        if (this.ruleForm.checkPass !== '') {
+          this.$refs.ruleForm.validateField('checkPass')
+        }
+        callback()
+      }
+    }
+    const validatePass2 = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
+      } else if (value !== this.ruleForm.pass) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
     return {
       uploadURL: 'http://127.0.0.1:3000/upload',
       headerObj: {
         Authorization: 'pageBanner'
       },
-      fileList: [],
       userInfo: {},
-      logoImg: '',
       editPassworddialogVisible: false,
       editLogodialogVisible: false,
       labelPosition: 'left',
       editUserForm: {
-        userName: '1231',
-        userEmail: '',
-        userPhone: '',
-        userQQ: '',
-        companyName: '',
-        companyAddress: ''
+      },
+      imgUrl: '',
+      ruleForm: {
+        pass: '',
+        checkPass: '',
+        oldpass: ''
+      },
+      rules: {
+        pass: [
+          { validator: validatePass, trigger: 'blur' },
+          { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
+        ],
+        checkPass: [
+          { validator: validatePass2, trigger: 'blur' }
+        ],
+        oldpass: [
+          { validator: validateOldPass, trigger: 'blur' }
+        ]
       }
     }
   },
   created () {
     this.editUserForm = JSON.parse(window.sessionStorage.getItem('users'))
+    this.imgUrl = this.editUserForm.logo
+    console.log(window.sessionStorage.getItem('pass'))
   },
   methods: {
     beforeAvatarUpload (file) {
-      const isJPG = file.type === 'image/jpeg'
       const isLt2M = file.size / 1024 / 1024 < 0.5
-      if (!isJPG) {
-        this.$message.error('上传图片只能是 JPG 格式!')
-      }
       if (!isLt2M) {
         this.$message.error('上传图片大小不能超过 500KB!')
       }
-      return isJPG && isLt2M
+      return isLt2M
     },
     handleSuccess (res) {
       this.$message.success('上传LOGO图片成功!')
-      this.logoImg = '/uploads/banner/' + res.img
+      this.imgUrl = '/uploads/banner/' + res.img
+      this.editUserForm.logo = this.imgUrl
     },
     handlechange (file, fileList) {
       if (fileList.length > 0) {
@@ -126,15 +175,35 @@ export default {
     handleLogoClose () {
       this.fileList = []
     },
-    handleClose () {},
-    editUser () {
-      console.log(this.logoImg)
+    handleClose () {
+      this.$refs.ruleForm.resetFields()
     },
-    editPassword () {
-      console.log(this.editUserForm)
+    editUser () {
+      EditUser(this.editUserForm).then(res => {
+        window.sessionStorage.setItem('users', JSON.stringify(this.editUserForm))
+        this.$message.success(res.message)
+      })
+    },
+    editPassword (formName) {
+      this.editUserForm.password = this.ruleForm.pass
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          EditUser(this.editUserForm).then(res => {
+            this.$message.success('修改密码成功')
+          })
+        } else {
+          return false
+        }
+      })
+      window.sessionStorage.setItem('pass', this.editUserForm.password)
+      this.editPassworddialogVisible = false
     },
     editLogo () {
-      console.log(this.logoImg)
+      EditUser(this.editUserForm).then(res => {
+        window.sessionStorage.setItem('users', JSON.stringify(this.editUserForm))
+        this.$message.success(res.message)
+        this.editLogodialogVisible = false
+      })
     }
   }
 }

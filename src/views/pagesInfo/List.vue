@@ -10,19 +10,19 @@
       row-key= "pageName"
       border
       cell-class-name = "ttd"
+      @expand-change="expandChange"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
-        <el-table-column label="展开" prop="pageName"></el-table-column>
-        <el-table-column label="页面名称" prop="pageName"></el-table-column>
-        <el-table-column label="页面banner图" prop="pageImage">
+        <el-table-column label="展开" prop="pageName" width="150px"></el-table-column>
+        <el-table-column label="页面banner图" prop="pageImage" width="500px" height="auto">
           <template slot-scope="scope">
-            <img :src="`${scope.row.pageImage}`" alt="" width="140px" height="auto">
+            <img :src="`${$baseUrl + scope.row.pageImage}`" alt="" width="100%">
           </template>
         </el-table-column>
-        <el-table-column label="页面关键词" prop="pageKey"></el-table-column>
+        <el-table-column label="页面关键词" prop="pageKey" width="100px"></el-table-column>
         <el-table-column label="页面描述" prop="pageDescription" class-name="dp"></el-table-column>
         <el-table-column label="操作" width="130px">
           <template slot-scope="scope">
-              <el-button type="primary" icon="el-icon-edit" size="mini" @click ="goEditPage(scope.row.id)"></el-button>
+              <el-button type="primary" icon="el-icon-edit" size="mini" ref="btn" @click ="goEditPage(scope.row.id,scope.row.cid)"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -30,7 +30,7 @@
     <el-dialog title="修改页面信息" :visible.sync="editPageDialogVisible" width="50%" @close="editPageDialogVisibleClosed">
       <el-form :model="editPageForm" :rules="editPageFormRules" ref="editPageFormRef" label-width="100px">
         <el-form-item label="页面标题" prop="pageName">
-          <el-input v-model="editPageForm.pageName"></el-input>
+          <el-input v-model="editPageForm.pageName" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="页面关键词" prop="pageKey">
           <el-input v-model="editPageForm.pageKey"></el-input>
@@ -39,25 +39,21 @@
           <el-input v-model="editPageForm.pageDescription"></el-input>
         </el-form-item>
         <el-form-item label="Banner图">
-            <el-alert show-icon title="图片尺寸560*350" type="warning" :closable="false" class="key_alert"></el-alert>
+            <el-alert show-icon title="图片尺寸1920*396" type="warning" :closable="false" class="key_alert"></el-alert>
             <el-upload
             :action="uploadURL"
-            ref="uploadPageBanner"
-            :file-list="fileList"
+            ref="editBanner"
             :before-upload="beforeAvatarUpload"
-            :on-change="handlechange"
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
-            list-type="picture"
             :on-error="onError"
             :headers="headerObj"
-            :auto-upload="false"
-            :on-success="handleSuccess">
+            :on-success="handleSuccess"
+            :show-file-list="false"
+            >
               <el-button size="small" type="primary">点击上传</el-button>
               <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
             </el-upload>
-            <el-card title="图片预览" v-show="previewVisible">
-              <img :src="`${previewPath}`" alt="previewPath" height="140px">
+            <el-card title="图片预览">
+              <img :src="`${$baseUrl + imgUrl}`" width="100%">
             </el-card>
         </el-form-item>
       </el-form>
@@ -70,7 +66,7 @@
 </template>
 
 <script>
-import { GetPageMultidata, GetPageMultidataById } from '../../network/page'
+import { GetPageMultidata, GetPageMultidataById, editPageInfo, GetPageChildMultidataById } from '../../network/page'
 export default {
   data () {
     return {
@@ -84,12 +80,12 @@ export default {
         ]
       },
       previewPath: '',
-      previewVisible: true,
       uploadURL: 'http://127.0.0.1:3000/upload',
       headerObj: {
         Authorization: 'pageBanner'
       },
-      fileList: []
+      imgUrl: '',
+      editName: ''
     }
   },
   created () {
@@ -108,6 +104,7 @@ export default {
     }
   },
   methods: {
+    expandChange (row, expandedRows) {},
     beforeAvatarUpload (file) {
       const isJPG = file.type === 'image/jpeg'
       const isLt2M = file.size / 1024 / 1024 < 0.5
@@ -121,32 +118,47 @@ export default {
     },
     handleSuccess (res) {
       this.$message.success('上传Banner图片成功!')
+      this.imgUrl = '/uploads/banner/' + res.img
+      this.editPageForm.pageImage = this.imgUrl
     },
     onError (res) {
       this.$message.error('上传Banner图片失败!')
     },
-    handlePreview (file) {},
-    handlechange (file, fileList) {
-      if (fileList.length > 0) {
-        this.fileList = [fileList[fileList.length - 1]]
+    goEditPage (id, cid) {
+      if (id !== undefined) {
+        GetPageMultidataById({ pid: id }).then(res => {
+          this.editPageForm = res.data[0]
+          this.imgUrl = this.editPageForm.pageImage
+        }).then(res => {
+          this.editPageDialogVisible = true
+          this.editName = 'page'
+        })
+      } else if (cid !== undefined) {
+        GetPageChildMultidataById({ pid: cid }).then(res => {
+          this.editPageForm = res.data[0]
+          this.imgUrl = this.editPageForm.pageImage
+        }).then(res => {
+          this.editPageDialogVisible = true
+          this.editName = 'category'
+        })
       }
-      this.$refs.uploadPageBanner.submit()
-    },
-    handleRemove (file) {
-      this.addCateForm.pageImage = ''
-    },
-    goEditPage (id) {
-      GetPageMultidataById({ pid: id }).then(res => {
-        this.editPageForm = res.data[0]
-        this.previewPath = this.editPageForm.pageImage
-      }).then(res => {
-        this.editPageDialogVisible = true
-      })
     },
     editPageDialogVisibleClosed () {
       this.$refs.editPageFormRef.resetFields()
     },
-    editPageInfo () {}
+    editPageInfo () {
+      if (this.editName === 'page') {
+        editPageInfo(this.editPageForm).then(res => {
+          this.$message.success(res.message)
+          GetPageMultidata().then(res => {
+            this.List = res.data
+            this.editPageDialogVisible = false
+          })
+        })
+      } else {
+        console.log('category')
+      }
+    }
   }
 }
 </script>

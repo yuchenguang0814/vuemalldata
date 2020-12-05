@@ -10,6 +10,12 @@ export function GetPageMultidataById (data) {
     params: data
   })
 }
+export function GetPageChildMultidataById (data) {
+  return request({
+    url: '/getpagechild',
+    params: data
+  })
+}
 export function GetBanner () {
   return request({
     url: '/banner'
@@ -26,5 +32,12 @@ export function removeBanner (id) {
   return request({
     url: '/removebanner',
     params: id
+  })
+}
+export function editPageInfo (data) {
+  return request({
+    method: 'post',
+    url: '/page',
+    data: data
   })
 }
