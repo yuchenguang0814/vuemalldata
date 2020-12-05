@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { GetPageMultidata, GetPageMultidataById, editPageInfo, GetPageChildMultidataById } from '../../network/page'
+import { GetPageMultidata, GetPageMultidataById, editPageInfo, GetPageChildMultidataById, editPageChildInfo } from '../../network/page'
 export default {
   data () {
     return {
@@ -156,7 +156,13 @@ export default {
           })
         })
       } else {
-        console.log('category')
+        editPageChildInfo(this.editPageForm).then(res => {
+          this.$message.success(res.message)
+          GetPageMultidata().then(res => {
+            this.List = res.data
+            this.editPageDialogVisible = false
+          })
+        })
       }
     }
   }

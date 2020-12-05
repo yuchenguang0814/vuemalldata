@@ -41,3 +41,10 @@ export function editPageInfo (data) {
     data: data
   })
 }
+export function editPageChildInfo (data) {
+  return request({
+    method: 'post',
+    url: '/pagechild',
+    data: data
+  })
+}
