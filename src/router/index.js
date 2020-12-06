@@ -10,6 +10,8 @@ const GoodsEdit = () => import('@/views/goods/Edit.vue')
 const GoodsCate = () => import('@/views/goods/Cate.vue')
 const PageList = () => import('@/views/pagesInfo/List.vue')
 const Banner = () => import('@/views/pagesInfo/Banner')
+const NewsList = () => import('@/views/news/NewsList.vue')
+const VideosList = () => import('@/views/news/VideosList.vue')
 Vue.use(VueRouter)
 
 const routes = [
@@ -57,6 +59,14 @@ const routes = [
       {
         path: '/banner',
         component: Banner
+      },
+      {
+        path: '/news',
+        component: NewsList
+      },
+      {
+        path: '/videos',
+        component: VideosList
       }
     ]
   }
