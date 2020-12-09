@@ -47,7 +47,7 @@
           <el-input v-model="addCateForm.pageDescription"></el-input>
         </el-form-item>
         <el-form-item label="分类小图">
-            <el-alert show-icon title="图片尺寸560*350" type="warning" :closable="false" class="key_alert"></el-alert>
+            <el-alert show-icon title="图片尺寸150*115" type="warning" :closable="false" class="key_alert"></el-alert>
             <el-upload
             :action="uploadURL"
             ref="upload"
@@ -62,11 +62,11 @@
             :auto-upload="false"
             :on-success="handleSuccess">
               <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+              <div slot="tip" class="el-upload__tip">请上传透明背景的png文件，且不超过500kb</div>
             </el-upload>
         </el-form-item>
         <el-form-item label="分类大图">
-            <el-alert show-icon title="图片尺寸560*350" type="warning" :closable="false" class="key_alert"></el-alert>
+            <el-alert show-icon title="图片尺寸610*520" type="warning" :closable="false" class="key_alert"></el-alert>
             <el-upload
             :action="uploadURL"
             ref="uploadBig"
@@ -81,7 +81,7 @@
             :auto-upload="false"
             :on-success="handleSuccessBig">
               <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+              <div slot="tip" class="el-upload__tip">上传jpg文件，且不超过500kb</div>
             </el-upload>
         </el-form-item>
       </el-form>
@@ -105,7 +105,7 @@
           <el-input v-model="editCateForm.pageDescription"></el-input>
         </el-form-item>
         <el-form-item label="分类小图">
-            <el-alert show-icon title="图片尺寸560*350" type="warning" :closable="false" class="key_alert"></el-alert>
+            <el-alert show-icon title="图片尺寸150*115" type="warning" :closable="false" class="key_alert"></el-alert>
             <el-upload
             :action="uploadURL"
             ref="eupload"
@@ -120,14 +120,14 @@
             :auto-upload="false"
             :on-success="ehandleSuccess">
               <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+              <div slot="tip" class="el-upload__tip">请上传透明背景的png文件，且不超过500kb</div>
             </el-upload>
             <el-card title="图片预览" v-show="previewVisible">
               <img :src="`${$baseUrl+previewPath}`" alt="previewPath">
             </el-card>
         </el-form-item>
         <el-form-item label="分类大图">
-            <el-alert show-icon title="图片尺寸560*350" type="warning" :closable="false" class="key_alert"></el-alert>
+            <el-alert show-icon title="图片尺寸610*520" type="warning" :closable="false" class="key_alert"></el-alert>
             <el-upload
             :action="uploadURL"
             ref="euploadBig"
@@ -142,7 +142,7 @@
             :auto-upload="false"
             :on-success="ehandleSuccessBig">
               <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+              <div slot="tip" class="el-upload__tip">上传jpg文件，且不超过500kb</div>
             </el-upload>
             <el-card title="图片预览" v-show="previewVisibleBig">
               <img :src="`${$baseUrl+previewPathBig}`" alt="previewPath" height="140px">
@@ -205,15 +205,11 @@ export default {
   },
   methods: {
     beforeAvatarUpload (file) {
-      const isJPG = file.type === 'image/jpeg'
       const isLt2M = file.size / 1024 / 1024 < 0.5
-      if (!isJPG) {
-        this.$message.error('上传分类图片只能是 JPG 格式!')
-      }
       if (!isLt2M) {
         this.$message.error('上传分类图片大小不能超过 500KB!')
       }
-      return isJPG && isLt2M
+      return isLt2M
     },
     handleSuccess (res) {
       this.$message.success('上传分类图片成功!')

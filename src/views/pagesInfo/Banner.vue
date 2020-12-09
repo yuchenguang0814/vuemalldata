@@ -20,7 +20,7 @@
       <el-table :data="bannerList">
         <el-table-column label="页面banner图" prop="image">
           <template slot-scope="scope">
-            <img :src="`${scope.row.image}`" alt="" width="500px" height="auto">
+            <img :src="`${$baseUrl + scope.row.image}`" alt="" width="500px" height="auto">
           </template>
         </el-table-column>
         <el-table-column label="操作" width="130px">
