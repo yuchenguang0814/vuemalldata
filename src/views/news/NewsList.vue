@@ -25,7 +25,7 @@
       <el-table :data="newsList" border stripe>
         <el-table-column label="新闻类别" prop="cid">
           <template slot-scope="scope">
-            {{ cateName(scope.row.cid)[0].name }}
+            {{ cateName(scope.row.cid).name }}
           </template>
         </el-table-column>
         <el-table-column label="新闻标题" prop="title"></el-table-column>
@@ -92,7 +92,8 @@ export default {
       })
     },
     cateName (id) {
-      return this.newcategory.filter(item => item.id === id)
+      const arr = this.newcategory.filter(item => item.id === id)
+      return arr[0]
     },
     handleSizeChange (newSize) {
       this.queryInfo.pagesize = newSize
@@ -106,7 +107,7 @@ export default {
       console.log(id)
     },
     goAddNew () {
-      console.log(1)
+      this.$router.push('/news/add')
     },
     goEditNew (id) {},
     removeNewById (id) {}
