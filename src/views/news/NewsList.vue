@@ -95,7 +95,7 @@ export default {
   },
   data () {
     return {
-      value: -1,
+      value: '',
       queryInfo: {
         query: '',
         pagenum: 1,
