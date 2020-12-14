@@ -189,7 +189,9 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           EditUser(this.editUserForm).then(res => {
-            this.$message.success('修改密码成功')
+            this.$message.success('修改密码成功，请重新登录')
+            window.sessionStorage.clear()
+            this.$router.push('/login')
           })
         } else {
           return false

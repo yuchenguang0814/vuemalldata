@@ -19,7 +19,7 @@
           </el-select>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary" @click="goAddNew">添加新闻</el-button>
+          <el-button type="primary" @click="goeditNew">添加新闻</el-button>
         </el-col>
       </el-row>
       <el-table :data="newsList" border stripe>
@@ -36,7 +36,7 @@
         </el-table-column>
         <el-table-column label="操作" width="130px">
           <template slot-scope="scope">
-              <el-button type="primary" icon="el-icon-edit" size="mini" @click ="goEditNew(scope.row.id)"></el-button>
+              <el-button type="primary" icon="el-icon-edit" size="mini" @click ="showEditNewDialogVisible(scope.row.id)"></el-button>
               <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeNewById(scope.row.id)"></el-button>
           </template>
         </el-table-column>
@@ -52,15 +52,50 @@
         :total="total">
       </el-pagination>
     </el-card>
+    <el-dialog title="修改新闻" :visible.sync="editNewDialogVisible" width="50%" @close="editNewDialogVisibleClosed">
+      <el-form :model="editNewForm" :rules="editNewFormRules" ref="editNewFormRef" label-width="200px" label-position="left" size="small">
+        <el-form-item label="请选择新闻所属分类" prop="cid">
+          <el-select v-model="editNewForm.cid" placeholder="请选择新闻类别">
+            <el-option
+              v-for="item in newcategory"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+              >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="新闻标题" prop="title">
+          <el-input v-model="editNewForm.title"></el-input>
+        </el-form-item>
+        <el-form-item label="作者" prop="author">
+          <el-input v-model="editNewForm.author"></el-input>
+        </el-form-item>
+        <el-form-item label="产品页面关键词" prop="pageKey">
+              <el-input v-model="editNewForm.pageKey"></el-input>
+            </el-form-item>
+            <el-form-item label="产品页面描述" prop="pageDescription">
+              <el-input v-model="editNewForm.pageDescription" type="textarea"></el-input>
+            </el-form-item>
+        <el-form-item label="">
+          <quill  ref="richAnalysis"/>
+        <el-button type="primary" class="btnAdd" @click="editNews">修改新闻</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getNews } from '../../network/news'
+import { getNews, getNewById, editNew } from '../../network/news'
+import Quill from '../../components/quill'
 export default {
+  components: {
+    Quill
+  },
   data () {
     return {
-      value: '',
+      value: -1,
       queryInfo: {
         query: '',
         pagenum: 1,
@@ -68,6 +103,16 @@ export default {
       },
       total: 0,
       newsList: [],
+      editNewDialogVisible: false,
+      editNewForm: {},
+      editNewFormRules: {
+        cid: [
+          { required: true, message: '请选择新闻类别', trigger: 'blur' }
+        ],
+        title: [
+          { required: true, message: '请填写新闻标题', trigger: 'blur' }
+        ]
+      },
       newcategory: [{
         id: 3,
         name: '企业新闻'
@@ -85,6 +130,25 @@ export default {
     this.getNewList()
   },
   methods: {
+    editNews () {
+      editNew(this.editNewForm).then(res => {
+        if (res.code !== 200) {
+          return this.$message.error(res.message)
+        }
+        this.$message.success(res.message)
+        this.editNewDialogVisible = false
+        this.getNewList()
+      })
+    },
+    showEditNewDialogVisible (cid) {
+      getNewById({ id: cid }).then(res => {
+        this.editNewForm = res.data.news[0]
+        this.editNewDialogVisible = true
+      })
+    },
+    editNewDialogVisibleClosed () {
+      this.$refs.editNewFormRef.resetFields()
+    },
     getNewList () {
       getNews(this.queryInfo).then(res => {
         this.newsList = res.data.news
@@ -104,9 +168,10 @@ export default {
       this.getNewList()
     },
     handleChange (id) {
-      console.log(id)
+      this.queryInfo.query = { cid: id }
+      this.getNewList()
     },
-    goAddNew () {
+    goeditNew () {
       this.$router.push('/news/add')
     },
     goEditNew (id) {},
