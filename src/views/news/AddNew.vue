@@ -31,7 +31,7 @@
               <el-input v-model="addNewForm.pageDescription" type="textarea"></el-input>
             </el-form-item>
         <el-form-item label="">
-          <quill  ref="richAnalysis"/>
+          <quill v-model="addNewForm.content" :value="addNewForm.content"/>
         <el-button type="primary" class="btnAdd" @click="addNews">添加新闻</el-button>
         </el-form-item>
       </el-form>
@@ -79,13 +79,13 @@ export default {
   },
   methods: {
     addNews () {
-      this.addNewForm.content = this.$refs.richAnalysis.connent
+      console.log(this.addNewForm.content)
       AddNew(this.addNewForm).then(res => {
         if (res.code !== 200) {
           return this.$message.error(res.message)
         }
         this.$message.success(res.message)
-        this.$router.push('/news')
+        // this.$router.push('/news')
       })
     }
   }

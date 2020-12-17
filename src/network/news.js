@@ -25,3 +25,9 @@ export function editNew (data) {
     data: data
   })
 }
+export function removeNew (id) {
+  return request({
+    url: '/removenew',
+    params: id
+  })
+}

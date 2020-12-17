@@ -78,7 +78,7 @@
               <el-input v-model="editNewForm.pageDescription" type="textarea"></el-input>
             </el-form-item>
         <el-form-item label="">
-          <quill  ref="richAnalysis"/>
+          <quill v-model="editNewForm.content" :value="editNewForm.content"  />
         <el-button type="primary" class="btnAdd" @click="editNews">修改新闻</el-button>
         </el-form-item>
       </el-form>
@@ -87,7 +87,7 @@
 </template>
 
 <script>
-import { getNews, getNewById, editNew } from '../../network/news'
+import { getNews, getNewById, editNew, removeNew } from '../../network/news'
 import Quill from '../../components/quill'
 export default {
   components: {
@@ -174,8 +174,11 @@ export default {
     goeditNew () {
       this.$router.push('/news/add')
     },
-    goEditNew (id) {},
-    removeNewById (id) {}
+    removeNewById (nid) {
+      removeNew({ id: nid }).then(res => {
+        this.getNewList()
+      })
+    }
   }
 }
 </script>

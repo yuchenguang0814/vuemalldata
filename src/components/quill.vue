@@ -1,6 +1,11 @@
 <template>
   <quill-editor
-    v-model="connent" :options="options"></quill-editor>
+      ref="richAnalysis"
+      v-model="content"
+      :content="value"
+      :options="options"
+      @change="onEditorChange($event)"
+    ></quill-editor>
 </template>
 
 <script>
@@ -15,6 +20,17 @@ export default {
   components: {
     quillEditor
   },
+  props: {
+    value: {
+      type: String
+    }
+  },
+  methods: {
+    onEditorChange () {
+      this.$emit('input', this.content)
+      console.log(this.content)
+    }
+  },
   mounted () {
     addQuillTitle()
   },
@@ -24,7 +40,7 @@ export default {
         theme: 'snow',
         placeholder: '请输入内容'
       },
-      connent: ''
+      content: this.value
     }
   }
 }
