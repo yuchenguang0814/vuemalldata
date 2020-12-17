@@ -19,7 +19,7 @@
           </el-select>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary" @click="goeditNew">添加新闻</el-button>
+          <el-button type="primary" @click="goAddNew">添加新闻</el-button>
         </el-col>
       </el-row>
       <el-table :data="newsList" border stripe>
@@ -131,13 +131,16 @@ export default {
   },
   methods: {
     editNews () {
-      editNew(this.editNewForm).then(res => {
-        if (res.code !== 200) {
-          return this.$message.error(res.message)
-        }
-        this.$message.success(res.message)
-        this.editNewDialogVisible = false
-        this.getNewList()
+      this.$refs.editNewFormRef.validate(async valid => {
+        if (!valid) return
+        editNew(this.editNewForm).then(res => {
+          if (res.code !== 200) {
+            return this.$message.error(res.message)
+          }
+          this.$message.success(res.message)
+          this.editNewDialogVisible = false
+          this.getNewList()
+        })
       })
     },
     showEditNewDialogVisible (cid) {
@@ -171,11 +174,12 @@ export default {
       this.queryInfo.query = { cid: id }
       this.getNewList()
     },
-    goeditNew () {
+    goAddNew () {
       this.$router.push('/news/add')
     },
     removeNewById (nid) {
       removeNew({ id: nid }).then(res => {
+        this.$message.success(res.message)
         this.getNewList()
       })
     }

@@ -13,6 +13,7 @@ const Banner = () => import('@/views/pagesInfo/Banner')
 const NewsList = () => import('@/views/news/NewsList.vue')
 const AddNew = () => import('@/views/news/AddNew.vue')
 const VideosList = () => import('@/views/news/VideosList.vue')
+const AddVideo = () => import('@/views/news/AddVideo.vue')
 Vue.use(VueRouter)
 
 const routes = [
@@ -72,6 +73,10 @@ const routes = [
       {
         path: '/videos',
         component: VideosList
+      },
+      {
+        path: '/videos/add',
+        component: AddVideo
       }
     ]
   }

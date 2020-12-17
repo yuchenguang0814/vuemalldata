@@ -80,6 +80,7 @@ export default {
     removeBannerById (Bid) {
       removeBanner({ id: Bid }).then(res => {
         GetBanner().then(res => {
+          this.$message.success(res.message)
           this.bannerList = res.data
         })
       })

@@ -31,3 +31,28 @@ export function removeNew (id) {
     params: id
   })
 }
+export function getVideos (data) {
+  return request({
+    url: '/videos',
+    params: data
+  })
+}
+export function AddVid (data) {
+  return request({
+    method: 'post',
+    url: '/videos',
+    data: data
+  })
+}
+export function getVideoById (data) {
+  return request({
+    url: '/video',
+    params: data
+  })
+}
+export function removeVid (id) {
+  return request({
+    url: '/removevid',
+    params: id
+  })
+}

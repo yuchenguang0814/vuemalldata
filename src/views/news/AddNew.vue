@@ -79,13 +79,15 @@ export default {
   },
   methods: {
     addNews () {
-      console.log(this.addNewForm.content)
-      AddNew(this.addNewForm).then(res => {
-        if (res.code !== 200) {
-          return this.$message.error(res.message)
-        }
-        this.$message.success(res.message)
-        // this.$router.push('/news')
+      this.$refs.addNewFormRef.validate(async valid => {
+        if (!valid) return
+        AddNew(this.addNewForm).then(res => {
+          if (res.code !== 200) {
+            return this.$message.error(res.message)
+          }
+          this.$message.success(res.message)
+          this.$router.push('/news')
+        })
       })
     }
   }
