@@ -15,7 +15,7 @@
             :on-success="handleSuccess"
             :show-file-list="false">
               <el-button size="small" type="primary">点击上传轮播图</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb,图片尺寸1920x650</div>
       </el-upload>
       <el-table :data="bannerList">
         <el-table-column label="页面banner图" prop="image">
@@ -77,7 +77,15 @@ export default {
     onError (res) {
       this.$message.error('上传Banner图片失败!')
     },
-    removeBannerById (Bid) {
+    async removeBannerById (Bid) {
+      const confirmResult = await this.$confirm('此操作将删除新闻, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已取消删除')
+      }
       removeBanner({ id: Bid }).then(res => {
         GetBanner().then(res => {
           this.$message.success(res.message)

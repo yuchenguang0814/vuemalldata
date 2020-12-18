@@ -13,14 +13,9 @@
       </el-row>
       <el-table :data="cateList" border stripe>
         <el-table-column label="商品序号" prop="pagePath"></el-table-column>
-        <el-table-column label="分类小图" prop="simage">
+        <el-table-column label="分类图片" prop="simage">
           <template slot-scope="scope">
             <img :src="`${$baseUrl+scope.row.pageTitleImage}`" alt="" width="140px" height="auto">
-          </template>
-        </el-table-column>
-        <el-table-column label="分类大图" prop="simage">
-          <template slot-scope="scope">
-            <img :src="`${$baseUrl+scope.row.pageImage}`" alt="" height="140px" width="auto">
           </template>
         </el-table-column>
         <el-table-column label="分类名称" prop="pageName"></el-table-column>
@@ -46,7 +41,7 @@
         <el-form-item label="SEO描述" prop="pageDescription">
           <el-input v-model="addCateForm.pageDescription"></el-input>
         </el-form-item>
-        <el-form-item label="分类小图">
+        <el-form-item label="分类图片">
             <el-alert show-icon title="图片尺寸150*115" type="warning" :closable="false" class="key_alert"></el-alert>
             <el-upload
             :action="uploadURL"
@@ -63,25 +58,6 @@
             :on-success="handleSuccess">
               <el-button size="small" type="primary">点击上传</el-button>
               <div slot="tip" class="el-upload__tip">请上传透明背景的png文件，且不超过500kb</div>
-            </el-upload>
-        </el-form-item>
-        <el-form-item label="分类大图">
-            <el-alert show-icon title="图片尺寸610*520" type="warning" :closable="false" class="key_alert"></el-alert>
-            <el-upload
-            :action="uploadURL"
-            ref="uploadBig"
-            :file-list="fileListBig"
-            :before-upload="beforeAvatarUpload"
-            :on-change="handlechangeBig"
-            :on-preview="handlePreview"
-            :on-remove="handleRemoveBig"
-            list-type="picture"
-            :on-error="onError"
-            :headers="headerObj"
-            :auto-upload="false"
-            :on-success="handleSuccessBig">
-              <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">上传jpg文件，且不超过500kb</div>
             </el-upload>
         </el-form-item>
       </el-form>
@@ -104,7 +80,7 @@
         <el-form-item label="SEO描述" prop="pageDescription">
           <el-input v-model="editCateForm.pageDescription"></el-input>
         </el-form-item>
-        <el-form-item label="分类小图">
+        <el-form-item label="分类图片">
             <el-alert show-icon title="图片尺寸150*115" type="warning" :closable="false" class="key_alert"></el-alert>
             <el-upload
             :action="uploadURL"
@@ -126,28 +102,6 @@
               <img :src="`${$baseUrl+previewPath}`" alt="previewPath">
             </el-card>
         </el-form-item>
-        <el-form-item label="分类大图">
-            <el-alert show-icon title="图片尺寸610*520" type="warning" :closable="false" class="key_alert"></el-alert>
-            <el-upload
-            :action="uploadURL"
-            ref="euploadBig"
-            :file-list="efileListBig"
-            :before-upload="beforeAvatarUpload"
-            :on-change="ehandlechangeBig"
-            :on-preview="handlePreview"
-            :on-remove="ehandleRemoveBig"
-            list-type="picture"
-            :on-error="onError"
-            :headers="headerObj"
-            :auto-upload="false"
-            :on-success="ehandleSuccessBig">
-              <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">上传jpg文件，且不超过500kb</div>
-            </el-upload>
-            <el-card title="图片预览" v-show="previewVisibleBig">
-              <img :src="`${$baseUrl+previewPathBig}`" alt="previewPath" height="140px">
-            </el-card>
-        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editCateDialogVisible = false">取 消</el-button>
@@ -163,17 +117,13 @@ export default {
   data () {
     return {
       previewVisible: true,
-      previewVisibleBig: true,
       previewPath: '',
-      previewPathBig: '',
       uploadURL: 'http://127.0.0.1:3000/upload',
       headerObj: {
         Authorization: 'goodsCateImage'
       },
       fileList: [],
-      fileListBig: [],
       efileList: [],
-      efileListBig: [],
       cateList: [],
       addCateDialogVisible: false,
       editCateDialogVisible: false,
@@ -215,19 +165,10 @@ export default {
       this.$message.success('上传分类图片成功!')
       this.addCateForm.pageTitleImage = '/uploads/catespics/' + res.img
     },
-    handleSuccessBig (res) {
-      this.$message.success('上传分类图片成功!')
-      this.addCateForm.pageImage = '/uploads/catespics/' + res.img
-    },
     ehandleSuccess (res) {
       this.$message.success('上传分类图片成功!')
       this.previewVisible = false
       this.editCateForm.pageTitleImage = '/uploads/catespics/' + res.img
-    },
-    ehandleSuccessBig (res) {
-      this.$message.success('上传分类图片成功!')
-      this.previewVisibleBig = false
-      this.editCateForm.pageImage = '/uploads/catespics/' + res.img
     },
     onError (res) {
       this.$message.error('上传分类图片失败!')
@@ -239,35 +180,17 @@ export default {
       }
       this.$refs.upload.submit()
     },
-    handlechangeBig (file, fileList) {
-      if (fileList.length > 0) {
-        this.fileListBig = [fileList[fileList.length - 1]]
-      }
-      this.$refs.uploadBig.submit()
-    },
     ehandlechange (file, fileList) {
       if (fileList.length > 0) {
         this.efileList = [fileList[fileList.length - 1]]
       }
       this.$refs.eupload.submit()
     },
-    ehandlechangeBig (file, fileList) {
-      if (fileList.length > 0) {
-        this.efileListBig = [fileList[fileList.length - 1]]
-      }
-      this.$refs.euploadBig.submit()
-    },
     handleRemove (file) {
       this.addCateForm.pageTitleImage = ''
     },
-    handleRemoveBig (file) {
-      this.addCateForm.pageImage = ''
-    },
     ehandleRemove (file) {
       this.addCateForm.pageTitleImage = ''
-    },
-    ehandleRemoveBig (file) {
-      this.addCateForm.pageImage = ''
     },
     getCateList () {
       getGoodsCate().then(res => {
@@ -282,12 +205,9 @@ export default {
     },
     showEditCateDialogVisible (id) {
       this.efileList = []
-      this.efileListBig = []
       this.previewVisible = true
-      this.previewVisibleBig = true
       getCateById(id).then(res => {
         this.editCateForm = res.data[0]
-        this.previewPathBig = this.editCateForm.pageImage
         this.previewPath = this.editCateForm.pageTitleImage
         this.editCateDialogVisible = true
       })

@@ -18,6 +18,12 @@ Vue.filter('dateFormat', function (originVal) {
   const d = (dt.getDate() + '').padStart(2, '0')
   return `${y}-${m}-${d}`
 })
+Vue.filter('hoursFormat', function (originVal) {
+  const dt = new Date(originVal)
+  const h = (dt.getHours() + '').padStart(2, '0')
+  const m = (dt.getMinutes() + '').padStart(2, '0')
+  return `${h}:${m}`
+})
 new Vue({
   router,
   render: h => h(App)

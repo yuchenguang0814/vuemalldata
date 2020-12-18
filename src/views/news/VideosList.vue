@@ -45,22 +45,50 @@
         <el-form-item label="视频链接" prop="vidurl">
           <el-input v-model="editVideoForm.vidurl"></el-input>
         </el-form-item>
+        <el-form-item label="视频图片">
+            <el-alert show-icon title="图片尺寸168*168" type="warning" :closable="false" class="key_alert"></el-alert>
+            <el-upload
+            :action="uploadURL"
+            ref="eupload"
+            :file-list="fileList"
+            :before-upload="beforeAvatarUpload"
+            :on-change="handlechange"
+            :on-remove="handleRemove"
+            list-type="picture"
+            :on-error="onError"
+            :headers="headerObj"
+            :auto-upload="false"
+            :on-success="handleSuccess">
+              <el-button size="small" type="primary">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip">请上传JPG文件，且不超过500kb</div>
+            </el-upload>
+            <el-card title="图片预览" v-show="previewVisible">
+              <img :src="`${$baseUrl+previewPath}`" alt="previewPath">
+            </el-card>
+        </el-form-item>
         <el-form-item label="视频页面关键词" prop="pageKey">
           <el-input v-model="editVideoForm.pageKey"></el-input>
         </el-form-item>
         <el-form-item label="视频页面描述" prop="pageDescription">
           <el-input v-model="editVideoForm.pageDescription" type="textarea"></el-input>
+          <el-button type="primary" class="btnAdd" @click="editVideo">修改视频</el-button>
         </el-form-item>
-        <el-button type="primary" class="btnAdd" @click="editVideos">修改视频</el-button>
       </el-form>
     </el-dialog>
   </div>
 </template>
 <script>
-import { getVideos, removeVid, getVideoById } from '../../network/news'
+import { getVideos, removeVid, getVideoById, editVideoPost } from '../../network/news'
 export default {
   data () {
     return {
+      previewVisible: true,
+      uploadURL: 'http://127.0.0.1:3000/upload',
+      headerObj: {
+        Authorization: 'newsImage'
+      },
+      fileList: [],
+      previewPath: '',
       queryInfo: {
         query: '',
         pagenum: 1,
@@ -84,6 +112,29 @@ export default {
     this.getVideoList()
   },
   methods: {
+    beforeAvatarUpload (file) {
+      const isLt2M = file.size / 1024 / 1024 < 0.5
+      if (!isLt2M) {
+        this.$message.error('上传分类图片大小不能超过 500KB!')
+      }
+      return isLt2M
+    },
+    handleSuccess (res) {
+      this.$message.success('上传视频图片成功!')
+      this.addVideoForm.imgurl = '/uploads/newspics/' + res.img
+    },
+    onError (res) {
+      this.$message.error('上传视频图片失败!')
+    },
+    handlechange (file, fileList) {
+      if (fileList.length > 0) {
+        this.fileList = [fileList[fileList.length - 1]]
+      }
+      this.$refs.upload.submit()
+    },
+    handleRemove (file) {
+      this.addVideoForm.imgurl = ''
+    },
     handleSizeChange (newSize) {
       this.queryInfo.pagesize = newSize
       this.getNewList()
@@ -104,16 +155,32 @@ export default {
     showEditVideoDialogVisible (vid) {
       getVideoById({ id: vid }).then(res => {
         this.editVideoForm = res.data.video[0]
+        this.previewPath = this.editVideoForm.imgurl
         this.editVideoDialogVisible = true
       })
     },
     editVideoDialogVisibleClosed () {
       this.$refs.editVideoFormRef.resetFields()
     },
-    editVideos () {
-      console.log(this.editVideoForm)
+    editVideo () {
+      this.$refs.editVideoFormRef.validate(async valid => {
+        if (!valid) return
+        editVideoPost(this.editVideoForm).then(res => {
+          this.$message.success(res.message)
+          this.editVideoDialogVisible = false
+          this.getVideoList()
+        })
+      })
     },
-    removeVideoById (vid) {
+    async removeVideoById (vid) {
+      const confirmResult = await this.$confirm('此操作将删除新闻, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已取消删除')
+      }
       removeVid({ id: vid }).then(res => {
         this.$message.success(res.message)
         this.getVideoList()

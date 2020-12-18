@@ -11,7 +11,7 @@
           <el-input v-model="addVideoForm.title"></el-input>
         </el-form-item>
         <el-form-item label="视频图片">
-            <el-alert show-icon title="图片尺寸150*115" type="warning" :closable="false" class="key_alert"></el-alert>
+            <el-alert show-icon title="图片尺寸168*168" type="warning" :closable="false" class="key_alert"></el-alert>
             <el-upload
             :action="uploadURL"
             ref="upload"

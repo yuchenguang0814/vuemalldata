@@ -177,7 +177,15 @@ export default {
     goAddNew () {
       this.$router.push('/news/add')
     },
-    removeNewById (nid) {
+    async removeNewById (nid) {
+      const confirmResult = await this.$confirm('此操作将删除新闻, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已取消删除')
+      }
       removeNew({ id: nid }).then(res => {
         this.$message.success(res.message)
         this.getNewList()

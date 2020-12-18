@@ -84,27 +84,40 @@ export default {
         id: 154,
         path: 'news'
       }, {
+        authName: '在线留言',
+        children: [{
+          authName: '留言列表',
+          id: 107,
+          path: 'orders'
+        }, {
+          authName: '在线问答',
+          id: 108,
+          path: 'question'
+        }],
+        id: 102,
+        path: 'orders'
+      }, {
         authName: '关于我们',
         children: [{
           authName: '荣誉中心',
           id: 167,
-          path: 'honor'
+          path: 'about'
         }, {
           authName: '工厂实景',
           id: 166,
           path: 'factory'
         }],
         id: 165,
-        path: 'news'
+        path: 'about'
       }, {
-        authName: '在线留言',
+        authName: '友情链接',
         children: [{
-          authName: '留言列表',
-          id: 107,
-          path: 'orders'
+          authName: '友情链接',
+          id: 181,
+          path: 'link'
         }],
-        id: 102,
-        path: 'orders'
+        id: 185,
+        path: 'reports'
       }, {
         authName: '数据统计',
         children: [{
@@ -122,6 +135,7 @@ export default {
         102: 'iconfont icon-danju',
         154: 'iconfont icon-danju',
         145: 'iconfont icon-baobiao',
+        185: 'iconfont icon-baobiao',
         165: 'iconfont icon-tijikongjian'
       },
       isCollapse: false,

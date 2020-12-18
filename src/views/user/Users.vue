@@ -57,6 +57,7 @@
       width="50%"
       @close="handleLogoClose">
       <img :src="`${$baseUrl + imgUrl}`" alt="" width="500px">
+       <el-alert show-icon title="图片尺寸363*68" type="warning" :closable="false" class="key_alert"></el-alert>
       <el-upload
             :action="uploadURL"
             ref="editLogo"
@@ -217,5 +218,11 @@ export default {
   width:600px;
   margin: 0 auto;
   border-radius: 10px
+}
+.key_alert {
+  width: 300px;
+  position: absolute;
+  left: 180px;
+  top: 0px;
 }
 </style>

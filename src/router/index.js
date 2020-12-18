@@ -14,6 +14,12 @@ const NewsList = () => import('@/views/news/NewsList.vue')
 const AddNew = () => import('@/views/news/AddNew.vue')
 const VideosList = () => import('@/views/news/VideosList.vue')
 const AddVideo = () => import('@/views/news/AddVideo.vue')
+const OrderList = () => import('@/views/orders/Order.vue')
+const QuestionList = () => import('@/views/orders/Question.vue')
+const LinkList = () => import('@/views/link/Link.vue')
+const Factory = () => import('@/views/about/Factory.vue')
+const Honor = () => import('@/views/about/Honor.vue')
+const Reports = () => import('@/views/reports/Reports.vue')
 Vue.use(VueRouter)
 
 const routes = [
@@ -77,6 +83,30 @@ const routes = [
       {
         path: '/videos/add',
         component: AddVideo
+      },
+      {
+        path: '/orders',
+        component: OrderList
+      },
+      {
+        path: '/question',
+        component: QuestionList
+      },
+      {
+        path: '/link',
+        component: LinkList
+      },
+      {
+        path: '/about',
+        component: Honor
+      },
+      {
+        path: '/factory',
+        component: Factory
+      },
+      {
+        path: '/reports',
+        component: Reports
       }
     ]
   }

@@ -50,6 +50,13 @@ export function getVideoById (data) {
     params: data
   })
 }
+export function editVideoPost (data) {
+  return request({
+    method: 'post',
+    url: '/video',
+    data: data
+  })
+}
 export function removeVid (id) {
   return request({
     url: '/removevid',
