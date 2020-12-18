@@ -6,11 +6,20 @@ import axios from 'axios'
 
 import './assets/fonts/iconfont.css'
 import './assets/css/global.css'
-
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
 Vue.prototype.$baseUrl = 'http://localhost:3000'
 
+router.beforeEach((to, from, next) => {
+  NProgress.start()
+  next()
+})
+
+router.afterEach(() => {
+  NProgress.done()
+})
 Vue.filter('dateFormat', function (originVal) {
   const dt = new Date(originVal)
   const y = dt.getFullYear()

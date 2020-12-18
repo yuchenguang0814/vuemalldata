@@ -1,4 +1,7 @@
 /*全局样式表*/
+#nprogress .bar {
+	background: red !important;
+}
 html,body,#app {
 	height: 100%;
 	padding: 0;

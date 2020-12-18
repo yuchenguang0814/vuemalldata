@@ -66,8 +66,11 @@
             <el-form-item label="产品特点" prop="goods_advantage">
               <el-input v-model="addForm.goods_advantage" type="textarea"></el-input>
             </el-form-item>
+            <el-form-item label="视频url" prop="vidurl">
+              <el-input v-model="addForm.vidurl"></el-input>
+            </el-form-item>
           </el-tab-pane>
-          <el-tab-pane label="商品图片" name="3">
+          <el-tab-pane label="图片和视频" name="3">
             <el-alert show-icon title="图片尺寸560*350" type="warning" :closable="false" class="key_alert"></el-alert>
             <el-upload
             :action="uploadURL"
@@ -133,7 +136,8 @@ export default {
         goods_description: '',
         goods_overview: '',
         goods_advantage: '',
-        goods_content: ''
+        goods_content: '',
+        vidurl: ''
       },
       addFormRules: {
         goods_name: [

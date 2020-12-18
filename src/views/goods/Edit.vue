@@ -69,6 +69,9 @@
         </el-upload>
         <el-card title="图片预览" v-show="previewVisible">
           <img :src="previewPath" alt="previewPath">
+          <el-form-item label="产品视频" prop="vidurl">
+          <el-input v-model="editForm.vidurl"></el-input>
+        </el-form-item>
         </el-card>
         <quill-editor
         v-model="editForm.content"
